@@ -102,6 +102,38 @@ References: [SEC APIs](https://www.sec.gov/search-filings/edgar-application-prog
 
 ## Live FX provider selection
 
+### Moving all BOP charts to another computer
+
+All nine BOP countries (USA, China, Japan, UK, Canada, Australia, New Zealand, Switzerland and Singapore) use public official releases/APIs. No BOP API key, Telegram account, Twelve Data credential, Excel installation or copied Windows credential is required. `FRED_API_KEY` is optional; US accounts fall back to the public FRED CSV download when it is absent or rejected. Each country has seven charts, with Quarterly/Rolling 4Q and the shared date filters.
+
+Clone or pull this repository, then run from the project folder:
+
+```powershell
+python bootstrap.py
+python launch.py --restart
+python scripts/check-bop.py --dashboard http://127.0.0.1:8000
+```
+
+Setup verifies every bundled chart series in both frequencies. Startup prints chart readiness and whether live refresh is enabled, without downloading releases. It uses the running server's read-only `GET /api/fx/bop/status` endpoint; readiness alone does not certify live network access. `BOP_ENABLED=true` is the default and can be set in the local backend `.env`. Restart after changing it. A server from an older version without project/PID identity fields must be stopped once manually before the first `--restart`.
+
+The BOP checker requires only Python's standard library and can run before installing the dashboard. These commands help separate deployment and network problems:
+
+```powershell
+python -I scripts/check-bop.py --offline
+python -I scripts/check-bop.py
+python -I scripts/check-bop.py --country GBR --json
+```
+
+`--offline` verifies the shipped data and definitions with an empty temporary cache, without contacting sources. The default command performs new downloads through the production adapters, validates accounting identities and all seven charts in both frequencies, and requires a current successful source-check timestamp for **every** source family. It writes no production cache or bundled snapshots. `--dashboard` runs that verification through the actual application API. Saved figures cannot pass a live check. Exit 0 means all selected checks passed; exit 1 identifies failures. Repeat `--country` to select several countries. The UK customs history can take a few minutes; the checker limits itself to two countries at a time.
+
+The project includes verified startup observations and series definitions in `backend/snapshots/`; `.runtime/`, user-specific `.env` and `data/` are not needed to transfer charts. The backend creates its own local cache and downloads revisions from FRED/BEA, Census/Treasury, BOJ/MOF, SAFE/NBS, ONS/HMRC/BoE, Statistics Canada, ABS, Stats NZ, SNB/SECO, SingStat/MAS and BIS as applicable. Requests originate from the Python backend. Its computer must be able to reach those sources; the checker reports certificate, TLS, DNS, HTTP and timeout failures separately where observable.
+
+If a new computer's managed network uses a company certificate that Python does not trust, obtain the approved PEM CA bundle from your administrator and set `BOP_CA_FILE=path/to/company-ca.pem` in `.env`, then restart. Relative paths resolve from the project folder. All ten BOP adapters, including New Zealand's cookie/form export, support this additional trust; certificate and hostname verification remain enabled. Existing Windows native-certificate fallbacks for SAFE and SNB remain available. No certificate verification or network controls are bypassed.
+
+Opening a country, manual refresh and the visible-page five-minute watcher check official releases. BOP observations update on their monthly/quarterly release schedule, rather than as streaming prices. Source failures preserve saved observations and their original check times. Missing or suppressed observations and the known mismatched historical Treasury table remain gaps. Fresh US observations also remain usable in memory if a local cache write fails, with a warning that they were not persisted.
+
+Verification on 30 October 2026: the running dashboard downloaded all **54 source families across nine countries** successfully. One repeat Bank of England check timed out and passed on retry; saved data did not count as a live success. A relocated project copy with no runtime directory, API keys or prior cache passed all chart checks in Python isolated mode. All **482 backend tests**, all 11 page renders and 72 country/frequency/date-range combinations passed. These checks do not certify an untested destination network; run the checker there.
+
 Open **http://127.0.0.1:8000/markets/fx**. The FX tab uses Yahoo Finance via yfinance as the primary quote/history source, with Twelve Data as fallback. The complete currency directory still comes from Twelve Data's zero-credit reference endpoint. Eight initial pairs are EUR/USD, GBP/USD, USD/JPY, USD/CAD, AUD/USD, NZD/USD, USD/SGD and USD/CHF. These cover all G7 currencies: EUR represents France, Germany and Italy; USD, GBP, JPY and CAD cover the remaining members. Existing browser lists receive a one-time upgrade to these defaults, retaining custom pairs where the 12-pair limit allows; subsequent user removals are respected. Search the provider directory by currency code, pair, currency name or group; select any result to load it. Compare up to 12 pairs, removing rows or replacing the selected pair when full. Data availability remains subject to the account plan.
 
 Yahoo history and reference quotes need no API key. Twelve Data is an optional backup and supplies the full pair directory. Configure its key separately on each computer using `python scripts/configure-fx.py`: the command prompts with hidden input, checks account access, and saves only an accepted key to the project's ignored `.env` file. The file contains a local plaintext secret; keep it private and outside shared folders or release archives. Do not paste keys into chat or commit them. `.env.example` documents supported FX settings without a credential.

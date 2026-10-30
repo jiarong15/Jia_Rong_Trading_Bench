@@ -16,7 +16,8 @@ from threading import RLock
 import time
 from urllib.error import URLError
 from urllib.parse import urlsplit
-from urllib.request import Request, urlopen
+from urllib.request import Request
+from .bop_http import urlopen
 from .bop import BOPError, COUNTRIES, FIELDS, aggregate, numeric, quarter_index, quarter_label
 from .bop_japan import strict_sum
 from .bop_macro import monthly_index, build_trade_view

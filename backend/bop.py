@@ -17,8 +17,9 @@ from pathlib import Path
 import re
 from threading import RLock
 import time
-from urllib.request import Request, urlopen
+from urllib.request import Request
 from urllib.parse import urlencode
+from .bop_http import urlopen
 
 
 COUNTRIES = [
@@ -358,7 +359,7 @@ class BOPService:
                 build_view(candidate)
                 self.snapshot = candidate
                 break
-            except (KeyError, ValueError, TypeError, BOPError):
+            except (OSError, KeyError, ValueError, TypeError, BOPError):
                 continue
 
     def view(self, country='USA', frequency='trailing4q', refresh=False):
@@ -390,12 +391,15 @@ class BOPService:
                     if self.snapshot and candidate['census_latest_month'] < self.snapshot['census_latest_month']:
                         raise BOPError('The source returned older customs data; the saved snapshot was retained.')
                     build_view(candidate)
-                    self.cache_path.parent.mkdir(parents=True, exist_ok=True)
-                    temporary = self.cache_path.with_suffix('.tmp')
-                    temporary.write_text(json.dumps(candidate, allow_nan=False), encoding='utf-8')
-                    temporary.replace(self.cache_path)
                     self.snapshot = candidate
                     self.last_error = None
+                    try:
+                        self.cache_path.parent.mkdir(parents=True, exist_ok=True)
+                        temporary = self.cache_path.with_suffix('.tmp')
+                        temporary.write_text(json.dumps(candidate, allow_nan=False), encoding='utf-8')
+                        temporary.replace(self.cache_path)
+                    except OSError:
+                        self.snapshot['source_warning'] = ' '.join(filter(None, (warning, 'Fresh USA data is in memory, but the local cache could not be saved.')))
                 except (OSError, ValueError, BOPError):
                     self.last_error = 'Official-source refresh failed. The last verified snapshot is retained with its original retrieval time.'
                 finally:

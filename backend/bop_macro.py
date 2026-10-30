@@ -11,7 +11,8 @@ from pathlib import Path
 import re
 from threading import RLock
 import time
-from urllib.request import Request, urlopen
+from urllib.request import Request
+from .bop_http import urlopen
 from .bop import BOPError, CensusRows, numeric, quarter_index, quarter_label
 
 QUARTER_IDS = ('GDP', 'IEAADI', 'IEAIDI', 'IEAAPIE', 'IEAIPIE', 'IEAAPID', 'IEAIPID', 'IEAAOI', 'IEAIOI', 'IEAAR')

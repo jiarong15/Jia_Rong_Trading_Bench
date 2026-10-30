@@ -18,7 +18,8 @@ import re
 from threading import RLock
 import time
 from urllib.parse import urljoin, urlparse
-from urllib.request import Request, urlopen, build_opener, HTTPCookieProcessor
+from urllib.request import Request, build_opener, HTTPCookieProcessor
+from .bop_http import urlopen, https_handler
 from uuid import uuid4
 from .bop import BOPError, COUNTRIES, FIELDS, aggregate, numeric, quarter_index, quarter_label
 from .bop_japan import strict_sum, quarter_sum
@@ -67,7 +68,7 @@ class ExportForm(HTMLParser):
 
 def fetch_infoshare_trade():
     """Submit a public read-only series query using the site's fresh form state."""
-    opener = build_opener(HTTPCookieProcessor(CookieJar()))
+    opener = build_opener(https_handler(), HTTPCookieProcessor(CookieJar()))
     with opener.open(Request(EXPORT, headers=HEADERS), timeout=30) as response:
         form_body = bounded_read(response, 1_000_000).decode('utf-8-sig')
     form = ExportForm(); form.feed(form_body)

@@ -36,6 +36,16 @@ def show_fx_status(url):
         print('These are local configuration checks. Test source access with: python scripts/check-fx.py')
     except (OSError,ValueError,KeyError,TypeError):print('FX startup status unavailable. Use --restart to load current code and settings.')
 
+
+def show_bop_status(url):
+    try:
+        status=read_json(url+'/api/fx/bop/status');countries=status['countries']
+        ready=sum(country['saved_charts_ready'] for country in countries)
+        print(f"BOP: {ready}/{len(countries)} country chart sets ready; live refresh {'enabled' if status['live_refresh_enabled'] else 'disabled'}; public sources require no API key.")
+        if not status['live_refresh_enabled']:print('Set BOP_ENABLED=true in backend settings and restart to enable source checks.')
+        print('Verify fresh official downloads here with: python scripts/check-bop.py')
+    except (OSError,ValueError,KeyError,TypeError):print('BOP startup status unavailable. Restart the server, then run python scripts/check-bop.py.')
+
 def main():
     args=argparse.ArgumentParser(description='Start Meridian locally')
     args.add_argument('--port',type=int,default=8000)
@@ -76,6 +86,7 @@ def main():
         else: raise SystemExit(f'Startup timed out. Inspect {runtime / "server.log"}')
     print(f'Meridian is running at {url}')
     show_fx_status(url)
+    show_bop_status(url)
     if not options.no_browser: webbrowser.open(url)
 
 if __name__=='__main__': main()

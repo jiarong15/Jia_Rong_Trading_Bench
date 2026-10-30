@@ -21,6 +21,7 @@ from .yahoo_fx import YahooFXService
 from .fx_sources import FXSources
 from .config import load_backend_env, project_id
 from .credentials import twelvedata_status
+from .bop_portability import inspect_views
 from .bop import BOPService, BOPError
 from .bop_macro import BOPMacroService
 from .bop_japan import JapanBOPService
@@ -117,6 +118,12 @@ def create_app(db_path=None):
     app.state.bop_switzerland=bop_switzerland
     bop_canada=CanadaBOPService(Path(store.path).parent/'bop-cache'/'canada.json',enabled=db_path is None and os.environ.get('BOP_ENABLED','true').lower()!='false')
     app.state.bop_canada=bop_canada
+    bop_services={'USA':bop,'CHN':bop_china,'JPN':bop_japan,'GBR':bop_uk,'CAN':bop_canada,
+                  'AUS':bop_australia,'NZL':bop_new_zealand,'CHE':bop_switzerland,'SGP':bop_singapore}
+    def bop_view(country,frequency,refresh):
+        result=bop_services[country].view(frequency=frequency,refresh=refresh)
+        if country=='USA' and result['status']=='ready':result['macro']=bop_macro.view(bop.snapshot['series'],refresh,frequency=frequency)
+        return result
     news=TelegramNewsService(Path(store.path).parent/'telegram-news.json',enabled=db_path is None and os.environ.get('TELEGRAM_NEWS_ENABLED','true').lower()!='false')
     app.state.telegram_news=news
     @app.exception_handler(TwelveDataError)
@@ -157,19 +164,22 @@ def create_app(db_path=None):
     def fx_bop(response:Response,country:str=Query(default='USA',max_length=3),frequency:Literal['quarterly','trailing4q']='trailing4q',refresh:bool=True):
         response.headers['Cache-Control']='no-store'
         try:
-            if country.upper()=='JPN':return bop_japan.view(frequency,refresh)
-            if country.upper()=='CHN':return bop_china.view(frequency,refresh)
-            if country.upper()=='GBR':return bop_uk.view(frequency,refresh)
-            if country.upper()=='SGP':return bop_singapore.view(frequency,refresh)
-            if country.upper()=='AUS':return bop_australia.view(frequency,refresh)
-            if country.upper()=='NZL':return bop_new_zealand.view(frequency,refresh)
-            if country.upper()=='CHE':return bop_switzerland.view(frequency,refresh)
-            if country.upper()=='CAN':return bop_canada.view(frequency,refresh)
-            result=bop.view(country.upper(),frequency,refresh)
-            if result['status']=='ready':result['macro']=bop_macro.view(bop.snapshot['series'],refresh,frequency=frequency)
-            return result
+            return bop_view(country.upper(),frequency,refresh)
         except KeyError:raise HTTPException(404,'Unknown BOP country.')
         except BOPError as exc:raise HTTPException(503,str(exc))
+    @app.get('/api/fx/bop/status')
+    def bop_status(response:Response):
+        response.headers['Cache-Control']='no-store'
+        countries=[]
+        for code,service in bop_services.items():
+            try:
+                report=inspect_views(code,{frequency:bop_view(code,frequency,False) for frequency in ('quarterly','trailing4q')})
+                countries.append({'code':code,'saved_charts_ready':report['status']=='passed','refresh_enabled':service.enabled,
+                                  'chart_count':7,'source_count':len(report['sources'])})
+            except (OSError,ValueError,TypeError,KeyError,BOPError):
+                countries.append({'code':code,'saved_charts_ready':False,'refresh_enabled':service.enabled,'chart_count':0})
+        return {'public_sources_require_key':False,'auto_check_seconds':300,'check':'local_chart_readiness_only',
+                'countries':countries,'live_refresh_enabled':all(service.enabled for service in (*bop_services.values(),bop_macro))}
     @app.get('/api/equities/market')
     def equity_market(symbols: str=','.join(DEFAULT_SYMBOLS)):
         market=deepcopy(equities.market(symbols_from(symbols)))
