@@ -1,0 +1,27 @@
+{
+  "description": "Point-in-time manual cross-check against BEA's September 24, 2026 release, tables 1.1 and 2.4, and Historical Comparisons. Values are USD millions, quarterly seasonally adjusted. This is an audit fixture, not a live-data override.",
+  "sources": [
+    "https://apps.bea.gov/iTable/?isuri=1&product=1&reqid=62&step=6&tablelist=1",
+    "https://apps.bea.gov/iTable/?isuri=1&product=1&reqid=62&step=6&tablelist=48",
+    "https://www.bea.gov/sites/default/files/2026-09/ita-iip226-hist.pdf"
+  ],
+  "dates": ["2025-01-01", "2025-04-01", "2025-07-01", "2025-10-01", "2026-01-01", "2026-04-01"],
+  "series_usd_millions": {
+    "current_account": [-438239, -254890, -262872, -221065, -212597, -246023],
+    "goods": [-456497, -264998, -278736, -259389, -250930, -291302],
+    "services": [81741, 79212, 84640, 82067, 92104, 91485],
+    "primary_income": [-12526, -21540, -16956, 3431, -15775, -11405],
+    "secondary_income": [-50956, -47564, -51821, -47173, -37996, -34802],
+    "capital_account": [6948, -1879, -1197, -2808, 1503, 1249],
+    "net_lending": [-431291, -256769, -264070, -223873, -211094, -244774],
+    "statistical_discrepancy": [184227, -172822, -113152, -24874, -84146, -124925],
+    "customs_exports": [530059, 548654, 541821, 559357, 610667, 634902],
+    "customs_imports": [985394, 809912, 810993, 808213, 856546, 923514]
+  },
+  "latest_quarter_usd_millions": {
+    "income_receipts": 416194,
+    "income_payments": 427598,
+    "financial_account": -369699
+  },
+  "rounding_tolerance_usd_millions": {"published_bea_series": 0, "monthly_census_vs_rounded_bea_table": 1}
+}

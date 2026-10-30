@@ -1,0 +1,1001 @@
+{
+  "accounts": [
+    {
+      "cube": "bopoverq",
+      "fields": {
+        "current_account": {
+          "id": "EPB@SNB.bopoverq{S0}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Current account - Net"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopoverq{S0}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "goods": {
+          "id": "EPB@SNB.bopoverq{S2}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Current account - Goods and services - Goods - Net"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopoverq{S2}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "services": {
+          "id": "EPB@SNB.bopoverq{S3}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Current account - Goods and services - Services - Net"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopoverq{S3}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "primary_income": {
+          "id": "EPB@SNB.bopoverq{S4}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Current account - Primary income - Net"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopoverq{S4}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "secondary_income": {
+          "id": "EPB@SNB.bopoverq{S7}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Current account - Secondary income - Net"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopoverq{S7}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "income_receipts": {
+          "id": "EPB@SNB.bopoverq{E4}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Current account - Primary income - Receipts"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopoverq{E4}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "income_payments": {
+          "id": "EPB@SNB.bopoverq{A4}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Current account - Primary income - Expenses"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopoverq{A4}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "capital_account": {
+          "id": "EPB@SNB.bopoverq{S8}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Capital account - Net"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopoverq{S8}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1995-Q1"
+        },
+        "financial_ex_derivatives": {
+          "id": "EPB@SNB.bopoverq{S9}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Financial account (excluding derivatives) - Net"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopoverq{S9}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "derivatives_net": {
+          "id": "EPB@SNB.bopoverq{S14}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Derivatives - Net"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopoverq{S14}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "2005-Q1"
+        },
+        "statistical_discrepancy": {
+          "id": "EPB@SNB.bopoverq{SD}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Statistical difference"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopoverq{SD}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "assets_total": {
+          "id": "EPB@SNB.bopoverq{NA0}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Financial account (excluding derivatives) - Net acquisition of financial assets"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopoverq{NA0}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "liabilities_total": {
+          "id": "EPB@SNB.bopoverq{NP0}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Financial account (excluding derivatives) - Net incurrence of liabilities"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopoverq{NP0}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        }
+      }
+    },
+    {
+      "cube": "bopcurrq",
+      "fields": {
+        "customs_exports": {
+          "id": "EPB@SNB.bopcurrq{T1,E}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Goods - Foreign trade - Total"
+            },
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Receipts"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcurrq{T1,E}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1983-Q1"
+        },
+        "customs_imports": {
+          "id": "EPB@SNB.bopcurrq{T1,A}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Goods - Foreign trade - Total"
+            },
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Expenses"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcurrq{T1,A}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1983-Q1"
+        },
+        "customs_goods_native": {
+          "id": "EPB@SNB.bopcurrq{T1,S}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Goods - Foreign trade - Total"
+            },
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcurrq{T1,S}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1983-Q1"
+        },
+        "goods_supplements": {
+          "id": "EPB@SNB.bopcurrq{T2,S}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Goods - Supplements to foreign trade - Total"
+            },
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcurrq{T2,S}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1983-Q1"
+        },
+        "goods_merchanting": {
+          "id": "EPB@SNB.bopcurrq{T3,S}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Goods - Merchanting"
+            },
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcurrq{T3,S}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1983-Q1"
+        },
+        "goods_detail_check": {
+          "id": "EPB@SNB.bopcurrq{T0,S}",
+          "header": [
+            {
+              "dim": "Component",
+              "dimItem": "Goods - Total"
+            },
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcurrq{T0,S}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1983-Q1"
+        }
+      }
+    }
+  ],
+  "investment": [
+    {
+      "cube": "bopcapbalq",
+      "fields": {
+        "direct_assets": {
+          "id": "EPB@SNB.bopcapbalq{NA,T1}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net acquisition of financial assets"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Direct investment - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{NA,T1}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "direct_liabilities": {
+          "id": "EPB@SNB.bopcapbalq{NP,T1}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net incurrence of liabilities"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Direct investment - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{NP,T1}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "equity_assets": {
+          "id": "EPB@SNB.bopcapbalq{NA,T3}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net acquisition of financial assets"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Portfolio investment - Equity securities - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{NA,T3}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "equity_liabilities": {
+          "id": "EPB@SNB.bopcapbalq{NP,T3}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net incurrence of liabilities"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Portfolio investment - Equity securities - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{NP,T3}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "debt_assets": {
+          "id": "EPB@SNB.bopcapbalq{NA,T25}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net acquisition of financial assets"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Portfolio investment - Debt securities - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{NA,T25}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "debt_liabilities": {
+          "id": "EPB@SNB.bopcapbalq{NP,T25}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net incurrence of liabilities"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Portfolio investment - Debt securities - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{NP,T25}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "other_assets": {
+          "id": "EPB@SNB.bopcapbalq{NA,T4}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net acquisition of financial assets"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Other investment - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{NA,T4}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "other_liabilities": {
+          "id": "EPB@SNB.bopcapbalq{NP,T4}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net incurrence of liabilities"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Other investment - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{NP,T4}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "portfolio_assets": {
+          "id": "EPB@SNB.bopcapbalq{NA,T2}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net acquisition of financial assets"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Portfolio investment - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{NA,T2}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "portfolio_liabilities": {
+          "id": "EPB@SNB.bopcapbalq{NP,T2}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net incurrence of liabilities"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Portfolio investment - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{NP,T2}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "reserve_transactions": {
+          "id": "EPB@SNB.bopcapbalq{NA,T7}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net acquisition of financial assets"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Reserve assets - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{NA,T7}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "direct_net_outward": {
+          "id": "EPB@SNB.bopcapbalq{S,D0}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Financial account - Direct investment"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{S,D0}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "portfolio_net_outward": {
+          "id": "EPB@SNB.bopcapbalq{S,P}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Financial account - Portfolio investment"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{S,P}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "other_net_outward": {
+          "id": "EPB@SNB.bopcapbalq{S,UI}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Financial account - Other investment"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{S,UI}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "financial_check": {
+          "id": "EPB@SNB.bopcapbalq{S,KD}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Financial account (including derivatives)"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{S,KD}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "derivatives_check": {
+          "id": "EPB@SNB.bopcapbalq{S,D2}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Net"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Financial account - Derivatives"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.bopcapbalq{S,D2}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "2005-Q1"
+        }
+      }
+    }
+  ],
+  "positions": [
+    {
+      "cube": "auvekomq",
+      "fields": {
+        "reserve_stock": {
+          "id": "EPB@SNB.auvekomq{A,T7}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Assets"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Reserve assets - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.auvekomq{A,T7}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "reserve_gold": {
+          "id": "EPB@SNB.auvekomq{A,G}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Assets"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Reserve assets - Gold holdings"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.auvekomq{A,G}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "reserve_imf": {
+          "id": "EPB@SNB.auvekomq{A,RIWF}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Assets"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Reserve assets - Reserve position in the IMF"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.auvekomq{A,RIWF}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "reserve_sdr": {
+          "id": "EPB@SNB.auvekomq{A,S1}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Assets"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Reserve assets - Special Drawing Rights"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.auvekomq{A,S1}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "reserve_foreign_currency": {
+          "id": "EPB@SNB.auvekomq{A,T8}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Assets"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Reserve assets - Foreign currency investments - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.auvekomq{A,T8}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        },
+        "reserve_other": {
+          "id": "EPB@SNB.auvekomq{A,U}",
+          "header": [
+            {
+              "dim": "Accounting entry",
+              "dimItem": "Assets"
+            },
+            {
+              "dim": "Component",
+              "dimItem": "Reserve assets - Other positions"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.auvekomq{A,U}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF millions"
+          },
+          "divisor": 1000,
+          "first_date": "1985-Q1"
+        }
+      }
+    }
+  ],
+  "debt": [
+    {
+      "cube": "sddsexd36912q",
+      "fields": {
+        "debt_government": {
+          "id": "EPB@SNB.sddsexd36912q{DG_GRS_BP6_XDC}",
+          "header": [
+            {
+              "dim": "Overview",
+              "dimItem": "General government - Short-term - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.sddsexd36912q{DG_GRS_BP6_XDC}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF billions"
+          },
+          "divisor": 1,
+          "first_date": "2000-Q1"
+        },
+        "debt_central_bank": {
+          "id": "EPB@SNB.sddsexd36912q{DCB_GRS_BP6_XDC}",
+          "header": [
+            {
+              "dim": "Overview",
+              "dimItem": "Swiss National Bank - Short-term - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.sddsexd36912q{DCB_GRS_BP6_XDC}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF billions"
+          },
+          "divisor": 1,
+          "first_date": "2000-Q1"
+        },
+        "debt_banks": {
+          "id": "EPB@SNB.sddsexd36912q{DODC_GRS_BP6_XDC}",
+          "header": [
+            {
+              "dim": "Overview",
+              "dimItem": "Deposit-taking corporation, except the central bank - Short-term - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.sddsexd36912q{DODC_GRS_BP6_XDC}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF billions"
+          },
+          "divisor": 1,
+          "first_date": "2000-Q1"
+        },
+        "debt_other": {
+          "id": "EPB@SNB.sddsexd36912q{DODS_GRS_BP6_XDC}",
+          "header": [
+            {
+              "dim": "Overview",
+              "dimItem": "Other sectors - Short-term - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.sddsexd36912q{DODS_GRS_BP6_XDC}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF billions"
+          },
+          "divisor": 1,
+          "first_date": "2000-Q1"
+        },
+        "intercompany_debt": {
+          "id": "EPB@SNB.sddsexd36912q{DIL_GR_BP6_XDC}",
+          "header": [
+            {
+              "dim": "Overview",
+              "dimItem": "Direct investment: intercompany lending - Total"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.sddsexd36912q{DIL_GR_BP6_XDC}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF billions"
+          },
+          "divisor": 1,
+          "first_date": "2000-Q1"
+        },
+        "gross_external_debt": {
+          "id": "EPB@SNB.sddsexd36912q{D_GR_BP6_XDC}",
+          "header": [
+            {
+              "dim": "Overview",
+              "dimItem": "Gross external debt"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.sddsexd36912q{D_GR_BP6_XDC}",
+            "frequency": "P3M",
+            "scale": "",
+            "unit": "In CHF billions"
+          },
+          "divisor": 1,
+          "first_date": "2000-Q1"
+        }
+      }
+    }
+  ],
+  "trade": [
+    {
+      "cube": "ausshawarm",
+      "fields": {
+        "exports": {
+          "id": "EPB@SNB.ausshawarm{A,GT,WMF}",
+          "header": [
+            {
+              "dim": "Overview",
+              "dimItem": "Exports"
+            },
+            {
+              "dim": "Goods category",
+              "dimItem": "Total"
+            },
+            {
+              "dim": "Value/Change",
+              "dimItem": "Value, in CHF millions"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.ausshawarm{A,GT,WMF}",
+            "frequency": "P1M",
+            "scale": ""
+          },
+          "divisor": 1000,
+          "first_date": "2012-01"
+        },
+        "imports": {
+          "id": "EPB@SNB.ausshawarm{E,GT,WMF}",
+          "header": [
+            {
+              "dim": "Overview",
+              "dimItem": "Imports"
+            },
+            {
+              "dim": "Goods category",
+              "dimItem": "Total"
+            },
+            {
+              "dim": "Value/Change",
+              "dimItem": "Value, in CHF millions"
+            }
+          ],
+          "metadata": {
+            "key": "EPB@SNB.ausshawarm{E,GT,WMF}",
+            "frequency": "P1M",
+            "scale": ""
+          },
+          "divisor": 1000,
+          "first_date": "2012-01"
+        }
+      }
+    }
+  ]
+}

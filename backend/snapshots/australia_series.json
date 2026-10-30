@@ -1,0 +1,548 @@
+{
+  "accounts": [
+    {
+      "filename": "530201.xlsx",
+      "release": "bop",
+      "fields": {
+        "current_account_nsa": {
+          "id": "A3533808F",
+          "sheet": "Data1",
+          "name": "Current account ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "bop_goods_nsa": {
+          "id": "A3533926V",
+          "sheet": "Data1",
+          "name": "Goods ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "services_nsa": {
+          "id": "A3534023X",
+          "sheet": "Data1",
+          "name": "Services ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "primary_income_nsa": {
+          "id": "A3533978W",
+          "sheet": "Data1",
+          "name": "Primary income ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "secondary_income_nsa": {
+          "id": "A3533782V",
+          "sheet": "Data1",
+          "name": "Secondary income ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "capital_account": {
+          "id": "A3535359W",
+          "sheet": "Data1",
+          "name": "Capital account ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "financial_inflow": {
+          "id": "A3533747L",
+          "sheet": "Data1",
+          "name": "Financial account ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "net_direct": {
+          "id": "A3533979X",
+          "sheet": "Data1",
+          "name": "Direct investment ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "direct_assets_cash": {
+          "id": "A3533874C",
+          "sheet": "Data1",
+          "name": "Direct investment, Assets ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "direct_liabilities": {
+          "id": "A3533954C",
+          "sheet": "Data1",
+          "name": "Direct investment, Liabilities ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "net_portfolio": {
+          "id": "A3533829T",
+          "sheet": "Data1",
+          "name": "Portfolio investment ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "net_other": {
+          "id": "A3533769A",
+          "sheet": "Data1",
+          "name": "Other investment ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "other_assets_cash": {
+          "id": "A3533845T",
+          "sheet": "Data1",
+          "name": "Other investment, Assets ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "other_liabilities": {
+          "id": "A3533830A",
+          "sheet": "Data1",
+          "name": "Other investment, Liabilities ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "derivatives_inflow": {
+          "id": "A3533875F",
+          "sheet": "Data1",
+          "name": "Financial derivatives ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "reserve_cash": {
+          "id": "A3533846V",
+          "sheet": "Data1",
+          "name": "Reserve assets ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "statistical_discrepancy": {
+          "id": "A3534001K",
+          "sheet": "Data1",
+          "name": "Net errors and omissions ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        }
+      }
+    },
+    {
+      "filename": "530204.xlsx",
+      "release": "bop",
+      "fields": {
+        "current_account": {
+          "id": "A3535187L",
+          "sheet": "Data1",
+          "name": "Current account ;",
+          "unit": "$ Millions",
+          "adjustment": "Seasonally Adjusted",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "goods": {
+          "id": "A3535205F",
+          "sheet": "Data1",
+          "name": "Goods ;",
+          "unit": "$ Millions",
+          "adjustment": "Seasonally Adjusted",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "services": {
+          "id": "A3535211A",
+          "sheet": "Data1",
+          "name": "Services ;",
+          "unit": "$ Millions",
+          "adjustment": "Seasonally Adjusted",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "primary_income": {
+          "id": "A3535270A",
+          "sheet": "Data1",
+          "name": "Primary income ;",
+          "unit": "$ Millions",
+          "adjustment": "Seasonally Adjusted",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "secondary_income": {
+          "id": "A3535267L",
+          "sheet": "Data1",
+          "name": "Secondary income ;",
+          "unit": "$ Millions",
+          "adjustment": "Seasonally Adjusted",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "income_receipts": {
+          "id": "A3535271C",
+          "sheet": "Data1",
+          "name": "Primary income credits ;",
+          "unit": "$ Millions",
+          "adjustment": "Seasonally Adjusted",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "income_payments": {
+          "id": "A3535272F",
+          "sheet": "Data1",
+          "name": "Primary income debits ;",
+          "unit": "$ Millions",
+          "adjustment": "Seasonally Adjusted",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": -1
+        }
+      }
+    }
+  ],
+  "investment": [
+    {
+      "filename": "5302013.xlsx",
+      "release": "bop",
+      "fields": {
+        "equity_assets_cash": {
+          "id": "A3534582V",
+          "sheet": "Data1",
+          "name": "PORTFOLIO INVESTMENT, Assets, Equity and investment fund shares ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "equity_liabilities": {
+          "id": "A3534585A",
+          "sheet": "Data1",
+          "name": "PORTFOLIO INVESTMENT, Liabilities, Equity and investment fund shares ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "debt_assets_cash": {
+          "id": "A3534149F",
+          "sheet": "Data1",
+          "name": "PORTFOLIO INVESTMENT, Assets, Debt securities ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "debt_liabilities": {
+          "id": "A3534077F",
+          "sheet": "Data1",
+          "name": "PORTFOLIO INVESTMENT, Liabilities, Debt securities ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "portfolio_net_check": {
+          "id": "A3538779W",
+          "sheet": "Data1",
+          "name": "PORTFOLIO INVESTMENT ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": 1
+        }
+      }
+    }
+  ],
+  "positions": [
+    {
+      "filename": "5302014.xlsx",
+      "release": "bop",
+      "fields": {
+        "reserve_opening": {
+          "id": "A3532220X",
+          "sheet": "Data4",
+          "name": "Position at beginning of period ;  RESERVE ASSETS ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "STOCK_OPEN",
+          "frequency": "Quarter",
+          "multiplier": -1
+        },
+        "reserve_transactions": {
+          "id": "A3532221A",
+          "sheet": "Data4",
+          "name": "Changes in position reflecting - transactions ;  RESERVE ASSETS ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": -1
+        },
+        "reserve_price": {
+          "id": "A3532222C",
+          "sheet": "Data4",
+          "name": "Changes in position reflecting - price changes ;  RESERVE ASSETS ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": -1
+        },
+        "reserve_fx": {
+          "id": "A3532223F",
+          "sheet": "Data4",
+          "name": "Changes in position reflecting - exchange rate changes ;  RESERVE ASSETS ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": -1
+        },
+        "reserve_other": {
+          "id": "A3532224J",
+          "sheet": "Data4",
+          "name": "Changes in position reflecting - other adjustments ;  RESERVE ASSETS ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Quarter",
+          "multiplier": -1
+        },
+        "reserve_stock": {
+          "id": "A3532225K",
+          "sheet": "Data4",
+          "name": "Position at end of period ;  RESERVE ASSETS ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "STOCK_CLOSE",
+          "frequency": "Quarter",
+          "multiplier": -1
+        }
+      }
+    }
+  ],
+  "debt": [
+    {
+      "filename": "5302017.xlsx",
+      "release": "bop",
+      "fields": {
+        "debt_government": {
+          "id": "A3484160C",
+          "sheet": "Data1",
+          "name": "Other liabilities, General government, Short-term ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "STOCK_CLOSE",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "debt_central_bank": {
+          "id": "A3484161F",
+          "sheet": "Data1",
+          "name": "Other liabilities, Financial corporations, Monetary authorities, Short-term ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "STOCK_CLOSE",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "debt_banks": {
+          "id": "A3484152C",
+          "sheet": "Data1",
+          "name": "Other liabilities, Financial corporations, Depository corporations, Short-term ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "STOCK_CLOSE",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "debt_other_financial": {
+          "id": "A3484180L",
+          "sheet": "Data1",
+          "name": "Other liabilities, Financial corporations, Other financial corporations, Short-term ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "STOCK_CLOSE",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "debt_other": {
+          "id": "A3484172L",
+          "sheet": "Data1",
+          "name": "Other liabilities, Other sectors, Short-term ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "STOCK_CLOSE",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "intercompany_debt": {
+          "id": "A3484150X",
+          "sheet": "Data1",
+          "name": "Direct investment liabilities ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "STOCK_CLOSE",
+          "frequency": "Quarter",
+          "multiplier": 1
+        },
+        "gross_external_debt": {
+          "id": "A3484170J",
+          "sheet": "Data1",
+          "name": "GROSS EXTERNAL DEBT ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "STOCK_CLOSE",
+          "frequency": "Quarter",
+          "multiplier": 1
+        }
+      }
+    }
+  ],
+  "gdp": [
+    {
+      "filename": "5206001_Key_Aggregates.xlsx",
+      "release": "gdp",
+      "fields": {
+        "gdp": {
+          "id": "A2304418T",
+          "sheet": "Data1",
+          "name": "Gross domestic product: Current prices ;",
+          "unit": "$ Millions",
+          "adjustment": "Seasonally Adjusted",
+          "type": "DERIVED",
+          "frequency": "Quarter",
+          "multiplier": 1
+        }
+      }
+    }
+  ],
+  "trade": [
+    {
+      "filename": "536801.xlsx",
+      "release": "trade",
+      "fields": {
+        "exports": {
+          "id": "A2718577A",
+          "sheet": "Data1",
+          "name": "Credits, Total goods ;",
+          "unit": "$ Millions",
+          "adjustment": "Seasonally Adjusted",
+          "type": "FLOW",
+          "frequency": "Month",
+          "multiplier": 1
+        },
+        "imports": {
+          "id": "A2718603V",
+          "sheet": "Data1",
+          "name": "Debits, Total goods ;",
+          "unit": "$ Millions",
+          "adjustment": "Seasonally Adjusted",
+          "type": "FLOW",
+          "frequency": "Month",
+          "multiplier": -1
+        },
+        "trade_balance": {
+          "id": "A2718594C",
+          "sheet": "Data1",
+          "name": "Balance on goods ;",
+          "unit": "$ Millions",
+          "adjustment": "Seasonally Adjusted",
+          "type": "FLOW",
+          "frequency": "Month",
+          "multiplier": 1
+        }
+      }
+    },
+    {
+      "filename": "5368012a.xlsx",
+      "release": "trade",
+      "fields": {
+        "customs_exports": {
+          "id": "A1827881R",
+          "sheet": "Data1",
+          "name": "-1 TOTAL ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Month",
+          "multiplier": 1
+        }
+      }
+    },
+    {
+      "filename": "5368013a.xlsx",
+      "release": "trade",
+      "fields": {
+        "customs_imports": {
+          "id": "A1828721W",
+          "sheet": "Data1",
+          "name": "-1 TOTAL ;",
+          "unit": "$ Millions",
+          "adjustment": "Original",
+          "type": "FLOW",
+          "frequency": "Month",
+          "multiplier": 1
+        }
+      }
+    }
+  ]
+}

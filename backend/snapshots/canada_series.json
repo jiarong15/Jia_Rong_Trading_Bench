@@ -1,0 +1,674 @@
+{
+  "36100016": {
+    "frequency": "quarterly",
+    "fields": {
+      "current_account": {
+        "vector": "v61915077",
+        "coordinate": "1.3.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Receipts, payments and balances": "Balances",
+          "Current account and capital account": "Total current account",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "goods": {
+        "vector": "v61915093",
+        "coordinate": "1.3.3.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Receipts, payments and balances": "Balances",
+          "Current account and capital account": "Goods",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "services": {
+        "vector": "v61915103",
+        "coordinate": "1.3.5.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Receipts, payments and balances": "Balances",
+          "Current account and capital account": "Services",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "primary_income": {
+        "vector": "v61915151",
+        "coordinate": "1.3.11.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Receipts, payments and balances": "Balances",
+          "Current account and capital account": "Primary income",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "secondary_income": {
+        "vector": "v61915199",
+        "coordinate": "1.3.17.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Receipts, payments and balances": "Balances",
+          "Current account and capital account": "Secondary income",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "capital_account": {
+        "vector": "v61915228",
+        "coordinate": "1.3.27.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Receipts, payments and balances": "Balances",
+          "Current account and capital account": "Capital account",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "net_lending_published": {
+        "vector": "v61915236",
+        "coordinate": "1.3.28.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Receipts, payments and balances": "Balances",
+          "Current account and capital account": "Net lending / net borrowing, from current and capital accounts",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "income_receipts": {
+        "vector": "v61914850",
+        "coordinate": "1.1.11.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Receipts, payments and balances": "Receipts",
+          "Current account and capital account": "Primary income",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "income_payments": {
+        "vector": "v61914998",
+        "coordinate": "1.2.11.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Receipts, payments and balances": "Payments",
+          "Current account and capital account": "Primary income",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      }
+    }
+  },
+  "36100472": {
+    "frequency": "quarterly",
+    "fields": {
+      "financial_account": {
+        "vector": "v61913615",
+        "coordinate": "1.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Net lending / net borrowing, from financial account",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "assets_total": {
+        "vector": "v61913623",
+        "coordinate": "1.2.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Net acquisition of financial assets",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "liabilities_total": {
+        "vector": "v61913724",
+        "coordinate": "1.19.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Net incurrence of liabilities",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "direct_assets": {
+        "vector": "v61913631",
+        "coordinate": "1.3.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Direct investment assets",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "direct_liabilities": {
+        "vector": "v61913732",
+        "coordinate": "1.20.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Direct investment liabilities",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "portfolio_assets": {
+        "vector": "v61913639",
+        "coordinate": "1.4.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Canadian portfolio investment",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "portfolio_liabilities": {
+        "vector": "v61913740",
+        "coordinate": "1.21.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Foreign portfolio investment",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "equity_assets": {
+        "vector": "v61913671",
+        "coordinate": "1.8.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Canadian portfolio investment, foreign equity and investment fund shares",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "equity_liabilities": {
+        "vector": "v61913772",
+        "coordinate": "1.25.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Foreign portfolio investment, Canadian equity and investment fund shares",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "debt_assets": {
+        "vector": "v61913647",
+        "coordinate": "1.5.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Canadian portfolio investment, foreign debt securities",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "debt_liabilities": {
+        "vector": "v61913748",
+        "coordinate": "1.22.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Foreign portfolio investment, Canadian debt securities",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "other_assets": {
+        "vector": "v61913692",
+        "coordinate": "1.15.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Other Canadian investment",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "other_liabilities": {
+        "vector": "v61913780",
+        "coordinate": "1.26.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Other foreign investment",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "reserve_transactions": {
+        "vector": "v61913679",
+        "coordinate": "1.9.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Official international reserves",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      },
+      "statistical_discrepancy": {
+        "vector": "v61913814",
+        "coordinate": "1.31.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Financial account": "Discrepancy (net errors and omissions)",
+          "Countries or regions": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1981-01"
+      }
+    }
+  },
+  "36100104": {
+    "frequency": "quarterly",
+    "fields": {
+      "gdp": {
+        "vector": "v62305814",
+        "coordinate": "1.2.2.30",
+        "metadata": {
+          "GEO": "Canada",
+          "Prices": "Current prices",
+          "Seasonal adjustment": "Unadjusted",
+          "Estimates": "Gross domestic product at market prices",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1961-01"
+      }
+    }
+  },
+  "36100485": {
+    "frequency": "quarterly",
+    "fields": {
+      "reserve_stock": {
+        "vector": "v61916494",
+        "coordinate": "1.8.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Canada's international investment position": "Official international reserves",
+          "Geographic region": "All countries",
+          "Valuation": "Market value",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1990-01"
+      },
+      "reserve_securities": {
+        "vector": "v101904396",
+        "coordinate": "1.32.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Canada's international investment position": "Official reserves, securities",
+          "Geographic region": "All countries",
+          "Valuation": "Market value",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1990-01"
+      },
+      "reserve_deposits": {
+        "vector": "v101904398",
+        "coordinate": "1.33.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Canada's international investment position": "Official reserves, currency and deposits",
+          "Geographic region": "All countries",
+          "Valuation": "Market value",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1990-01"
+      },
+      "reserve_gold": {
+        "vector": "v101904400",
+        "coordinate": "1.34.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Canada's international investment position": "Official reserves, gold",
+          "Geographic region": "All countries",
+          "Valuation": "Market value",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1990-01"
+      },
+      "reserve_sdr": {
+        "vector": "v101904402",
+        "coordinate": "1.35.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Canada's international investment position": "Official reserves, special drawing rights",
+          "Geographic region": "All countries",
+          "Valuation": "Market value",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1990-01"
+      },
+      "reserve_imf": {
+        "vector": "v101904404",
+        "coordinate": "1.36.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Canada's international investment position": "Official reserves, reserve position in International Monetary Fund (IMF)",
+          "Geographic region": "All countries",
+          "Valuation": "Market value",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1990-01"
+      },
+      "reserve_other": {
+        "vector": "v1490436571",
+        "coordinate": "1.41.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Canada's international investment position": "Official reserves, other reserve assets",
+          "Geographic region": "All countries",
+          "Valuation": "Market value",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "2022-01"
+      }
+    }
+  },
+  "36100446": {
+    "frequency": "quarterly",
+    "fields": {
+      "debt_total": {
+        "vector": "v101870060",
+        "coordinate": "1.1.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Currency": "All currencies",
+          "Type of instrument": "All instruments",
+          "Valuation": "Market value",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "2002-10"
+      },
+      "short_term_external_debt": {
+        "vector": "v101870062",
+        "coordinate": "1.1.2.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Currency": "All currencies",
+          "Type of instrument": "Short-term instruments",
+          "Valuation": "Market value",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "2002-10"
+      },
+      "debt_long_term": {
+        "vector": "v101870064",
+        "coordinate": "1.1.3.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Currency": "All currencies",
+          "Type of instrument": "Long-term instruments",
+          "Valuation": "Market value",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "2002-10"
+      },
+      "debt_intercompany": {
+        "vector": "v101870066",
+        "coordinate": "1.1.4.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Currency": "All currencies",
+          "Type of instrument": "Direct investment liabilities, debt instruments",
+          "Valuation": "Market value",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "2002-10"
+      }
+    }
+  },
+  "12100011": {
+    "frequency": "monthly",
+    "fields": {
+      "customs_exports": {
+        "vector": "v87008868",
+        "coordinate": "1.2.1.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Trade": "Export",
+          "Basis": "Customs",
+          "Seasonal adjustment": "Unadjusted",
+          "Principal trading partners": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1997-01"
+      },
+      "customs_imports": {
+        "vector": "v87008752",
+        "coordinate": "1.1.1.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Trade": "Import",
+          "Basis": "Customs",
+          "Seasonal adjustment": "Unadjusted",
+          "Principal trading partners": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1997-01"
+      },
+      "goods_exports": {
+        "vector": "v87008926",
+        "coordinate": "1.2.2.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Trade": "Export",
+          "Basis": "Balance of payments",
+          "Seasonal adjustment": "Unadjusted",
+          "Principal trading partners": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1997-01"
+      },
+      "goods_imports": {
+        "vector": "v87008810",
+        "coordinate": "1.1.2.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Trade": "Import",
+          "Basis": "Balance of payments",
+          "Seasonal adjustment": "Unadjusted",
+          "Principal trading partners": "All countries",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "1997-01"
+      }
+    }
+  },
+  "12100144": {
+    "frequency": "monthly",
+    "fields": {
+      "services_exports": {
+        "vector": "v1105277794",
+        "coordinate": "1.1.1.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Trade": "Exports (receipts)",
+          "Trade partners": "All countries",
+          "Service categories": "Total services",
+          "Seasonal adjustment ": "Not seasonally adjusted",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "2007-01"
+      },
+      "services_imports": {
+        "vector": "v1105277804",
+        "coordinate": "1.2.1.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Trade": "Imports (payments)",
+          "Trade partners": "All countries",
+          "Service categories": "Total services",
+          "Seasonal adjustment ": "Not seasonally adjusted",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "2007-01"
+      },
+      "services_balance": {
+        "vector": "v1105277814",
+        "coordinate": "1.3.1.1.1",
+        "metadata": {
+          "GEO": "Canada",
+          "Trade": "Balances",
+          "Trade partners": "All countries",
+          "Service categories": "Total services",
+          "Seasonal adjustment ": "Not seasonally adjusted",
+          "UOM": "Dollars",
+          "UOM_ID": "81",
+          "SCALAR_FACTOR": "millions",
+          "SCALAR_ID": "6"
+        },
+        "first_date": "2007-01"
+      }
+    }
+  }
+}
