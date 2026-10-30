@@ -22,6 +22,10 @@ export function watchNewsRefresh(refresh:()=>void,canRefresh:()=>boolean,lastAtt
 }
 
 export type NewsItem={id:number;text:string;published_at:string;url:string};
+export function filterNewsItems(items:NewsItem[],query:string){
+ const terms=query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+ return terms.length?items.filter(item=>{const text=item.text.toLowerCase();return terms.every(term=>text.includes(term));}):items;
+}
 export function newPostCount(previousHighest:number|null,items:NewsItem[]){
  return previousHighest===null?0:items.filter(item=>item.id>previousHighest).length;
 }

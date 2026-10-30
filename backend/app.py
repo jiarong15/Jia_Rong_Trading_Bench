@@ -132,6 +132,10 @@ def create_app(db_path=None):
     def telegram_news(response:Response):
         response.headers['Cache-Control']='no-store'
         return news.view()
+    @app.get('/api/news/telegram/history')
+    def telegram_news_history(response:Response,before:int=Query(gt=0,lt=1_000_000_000_000)):
+        response.headers['Cache-Control']='no-store'
+        return news.load_history(before)
     @app.get('/api/fx/market')
     def fx_market(pairs:str=','.join(DEFAULT_PAIRS)):return fx_sources.market(pairs_from(pairs))
     @app.get('/api/fx/search')

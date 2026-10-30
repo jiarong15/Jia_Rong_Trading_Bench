@@ -79,12 +79,12 @@ def test_new_posts_and_edits_update_by_id_preserving_recent_history(tmp_path):
     assert service.cache_path.exists() and not service.cache_path.with_suffix('.tmp').exists()
 
 
-def test_history_is_bounded_to_200_posts(tmp_path):
+def test_history_is_bounded_to_1000_posts(tmp_path):
     clock = [0]; batch = [0]
     service = TelegramNewsService(tmp_path / 'news.json', transport=lambda: ''.join(post(i) for i in range(batch[0] + 1, batch[0] + 101)), monotonic=lambda: clock[0])
-    for value in (0, 100, 200):
+    for value in range(0, 1100, 100):
         batch[0] = value; service.view(); clock[0] += 10
-    rows = service.view()['items']; assert len(rows) == 200 and rows[0]['id'] == 300 and rows[-1]['id'] == 101
+    rows = service.view()['items']; assert len(rows) == 1000 and rows[0]['id'] == 1100 and rows[-1]['id'] == 101
 
 
 def test_outage_preserves_original_check_time_and_saved_posts_across_restart(tmp_path):

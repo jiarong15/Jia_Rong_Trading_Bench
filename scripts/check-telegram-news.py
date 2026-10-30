@@ -15,7 +15,7 @@ from urllib.parse import urlsplit
 from urllib.request import urlopen
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from backend.telegram_news import check_connection
+from backend.telegram_news import check_connection, MAX_CACHE_BYTES
 
 
 def dashboard_check(base_url):
@@ -25,8 +25,8 @@ def dashboard_check(base_url):
     try:
         with urlopen(base_url.rstrip('/') + '/api/news/telegram', timeout=20) as response:
             if response.headers.get('Cache-Control') != 'no-store': raise ValueError('The server is not serving the expected uncached news endpoint.')
-            body = response.read(5_000_001)
-            if len(body) > 5_000_000: raise ValueError('The dashboard news response is oversized.')
+            body = response.read(MAX_CACHE_BYTES + 1)
+            if len(body) > MAX_CACHE_BYTES: raise ValueError('The dashboard news response is oversized.')
             feed = json.loads(body)
         if not isinstance(feed, dict): raise ValueError('Invalid news response.')
         if feed.get('status') != 'ready' or feed.get('channel', {}).get('username') != 'marketfeed' or not isinstance(feed.get('items'), list) or not feed['items']:

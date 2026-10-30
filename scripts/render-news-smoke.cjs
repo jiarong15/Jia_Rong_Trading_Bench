@@ -37,6 +37,18 @@ async function main(){
  assert.ok(failed.includes('Feed unavailable')&&failed.includes('Retry connection')&&failed.includes('No successful source check yet'));
  assert.ok(render(null,true).includes('Loading the latest channel posts'));
  assert.ok(!render(feed,false,'Synthetic backend error').includes('Live ·'));
+ const archive={...feed,history_limit:1000,has_more_history:true,history_error:null,history_before:122,items:[...feed.items,{id:122,text:'Synthetic older inflation headline',published_at:'2025-12-31T00:00:00Z',url:'https://t.me/marketfeed/122'}]};
+ const searching=renderToString(React.createElement(NewsWindow,{feed:archive,busy:false,error:'',query:'older inflation',onClose:()=>{},onRetry:()=>{},onQueryChange:()=>{},onLoadOlder:()=>{}}));
+ const searchText=searching.replace(/<!--.*?-->/g,'');
+ assert.ok(searching.includes('aria-label="Search past market news"')&&searching.includes('Clear news search')&&searching.includes('1 match')&&searchText.includes('1,000 posts loaded')&&searching.includes('Searching older news'));
+ assert.ok(searching.includes('Synthetic older inflation headline')&&!searching.includes('SYNTHETIC TEST HEADLINE')&&searching.includes('Load older news'));
+ const noMatches=renderToString(React.createElement(NewsWindow,{feed:{...archive,has_more_history:false},busy:false,error:'',query:'unmatched',onClose:()=>{},onRetry:()=>{}}));
+ assert.ok(noMatches.includes('No matching news')&&!noMatches.includes('Waiting for a connection'));
+ const full=render({...archive,has_more_history:false,items:Array.from({length:1000},(_,i)=>({...feed.items[0],id:1000-i,text:`SYNTHETIC ARCHIVE POST ${1000-i}`}))});
+ assert.equal((full.match(/class="news-post"/g)||[]).length,1000);
+ assert.ok(full.includes('1,000-post history limit reached')&&full.includes('SYNTHETIC ARCHIVE POST 1<'));
+ const historyFailed=render({...archive,history_error:'Synthetic history outage'});
+ assert.ok(historyFailed.includes('Retry older news')&&historyFailed.includes('Live · 10s checks'));
  console.log('PASS news window: ready, saved, unavailable, loading, safe text/links and timestamps. Browser layout and interaction are not verified by server rendering.');
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

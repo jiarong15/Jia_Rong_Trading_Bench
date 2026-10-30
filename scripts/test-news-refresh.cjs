@@ -32,3 +32,19 @@ test('initial history and edited existing posts do not create unread notificatio
  const f=fixture();const count=f.exports.newPostCount;
  assert.equal(count(null,[{id:100}]),0);assert.equal(count(100,[{id:100,text:'edited'},{id:99}]),0);assert.equal(count(100,[{id:102},{id:101},{id:100}]),2);assert.equal(count(100,[]),0);f.stop();
 });
+
+test('search matches all keywords without regard to case and preserves source order',()=>{
+ const f=fixture();const items=[{id:3,text:'Fed raises interest rates'},{id:2,text:'Bank of Japan keeps rates unchanged'},{id:1,text:'FED officials discuss lower rates'}];
+ const before=JSON.stringify(items);
+ assert.deepEqual(Array.from(f.exports.filterNewsItems(items,'  FED   rates ').map(item=>item.id)),[3,1]);
+ assert.equal(f.exports.filterNewsItems(items,'japan')[0].id,2);
+ assert.equal(f.exports.filterNewsItems(items,'unmatched').length,0);
+ assert.equal(JSON.stringify(items),before);assert.equal(f.exports.filterNewsItems(items,'   '),items);f.stop();
+});
+
+test('search reaches the oldest of 1000 posts and includes newly loaded history',()=>{
+ const f=fixture();const items=Array.from({length:1000},(_,i)=>({id:1000-i,text:i===999?'SYNTHETIC oldest inflation headline':'Other news'}));
+ assert.equal(f.exports.filterNewsItems(items,'oldest inflation')[0].id,1);
+ assert.equal(f.exports.filterNewsItems(items.slice(0,20),'oldest').length,0);
+ assert.equal(f.exports.filterNewsItems(items,'[').length,0);f.stop();
+});

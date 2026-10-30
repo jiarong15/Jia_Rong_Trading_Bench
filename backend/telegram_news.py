@@ -22,7 +22,9 @@ CHANNEL = 'marketfeed'
 PREVIEW_URL = 'https://t.me/s/marketfeed'
 CHANNEL_URL = 'https://t.me/marketfeed'
 POLL_SECONDS = 10
-MAX_ITEMS = 200
+MAX_ITEMS = 1000
+MAX_CACHE_BYTES = 100_000_000
+HISTORY_INTERVAL = 2
 MAX_DOWNLOAD = 2_000_000
 VOID = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'param', 'source', 'track', 'wbr'}
 
@@ -33,7 +35,9 @@ class NewsError(Exception):
         self.code = code
 
 
-def fetch_preview():
+def fetch_preview(before=None):
+    if before is not None and (type(before) is not int or not 0 < before < 1_000_000_000_000):
+        raise NewsError('Invalid Telegram history cursor.')
     # Use this machine's trusted roots and normal system/environment proxies.
     # An optional deployment-specific CA adds trust without disabling TLS checks.
     context = ssl.create_default_context()
@@ -42,7 +46,8 @@ def fetch_preview():
         try: context.load_verify_locations(cafile=ca_file)
         except (OSError, ValueError) as exc:
             raise NewsError('The configured Telegram CA certificate could not be loaded. Check TELEGRAM_NEWS_CA_FILE on this computer.', 'configuration_error') from exc
-    request = Request(PREVIEW_URL, headers={'User-Agent': 'Mozilla/5.0 (compatible; MeridianLocalDashboard/1.0)',
+    url = PREVIEW_URL if before is None else PREVIEW_URL + '?before=' + str(before)
+    request = Request(url, headers={'User-Agent': 'Mozilla/5.0 (compatible; MeridianLocalDashboard/1.0)',
                       'Accept': 'text/html', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache'})
     with urlopen(request, timeout=8, context=context) as response:
         if 'text/html' not in response.headers.get('Content-Type', ''): raise NewsError('Telegram did not return a channel preview.')
@@ -100,10 +105,12 @@ class PreviewParser(HTMLParser):
     def __init__(self):
         super().__init__(convert_charrefs=True)
         self.stack = []; self.current = None; self.text_depth = None; self.date_depth = None; self.skip_depth = None
-        self.items = []; self.post_count = 0
+        self.items = []; self.post_count = 0; self.channel_meta = False; self.channel_layout = False
 
     def handle_starttag(self, tag, attrs):
         data = dict(attrs); classes = set(data.get('class', '').split()); depth = len(self.stack) + 1
+        if tag == 'meta' and data.get('property') == 'og:url' and data.get('content', '').rstrip('/') == CHANNEL_URL: self.channel_meta = True
+        if 'tgme_channel_info' in classes: self.channel_layout = True
         if tag not in VOID: self.stack.append(tag)
         if 'tgme_widget_message' in classes and 'data-post' in data:
             if self.current is not None: raise NewsError('Telegram changed its post layout.')
@@ -150,10 +157,12 @@ class PreviewParser(HTMLParser):
         del self.stack[depth - 1:]
 
 
-def parse_preview(body):
+def parse_preview(body, allow_empty=False):
     if not isinstance(body, str) or len(body) > MAX_DOWNLOAD: raise NewsError('Invalid Telegram preview response.')
     parser = PreviewParser(); parser.feed(body); parser.close()
-    if parser.current is not None or not parser.items: raise NewsError('Telegram preview contains no readable posts or its layout changed.')
+    if parser.current is not None: raise NewsError('Telegram preview contains an incomplete post.')
+    if not parser.items and not (allow_empty and parser.channel_meta and parser.channel_layout and not parser.stack):
+        raise NewsError('Telegram preview contains no readable posts or its layout changed.')
     unique = {}
     for item in parser.items:
         if item['id'] in unique and unique[item['id']] != item: raise NewsError('Telegram returned conflicting duplicate posts.')
@@ -170,18 +179,80 @@ def checked_item(item):
 
 
 class TelegramNewsService:
-    def __init__(self, cache_path, enabled=True, transport=None, monotonic=None):
+    def __init__(self, cache_path, enabled=True, transport=None, monotonic=None, history_transport=None):
         self.cache_path = Path(cache_path); self.enabled = enabled; self.transport = transport or fetch_preview
         self.monotonic = monotonic or time.monotonic; self.lock = RLock(); self.next_check = 0
+        self.history_transport = history_transport or (lambda before: fetch_preview(before))
+        self.next_history_check = 0; self.history_exhausted = False; self.history_cursor = None; self.history_error = self.history_error_code = None
         self.items = []; self.last_checked_at = self.last_attempt_at = None; self.error = self.error_code = None; self.cache_warning = None
         try:
-            if self.cache_path.stat().st_size > 5_000_000: raise NewsError('Saved news cache is oversized.')
+            if self.cache_path.stat().st_size > MAX_CACHE_BYTES: raise NewsError('Saved news cache is oversized.')
             data = json.loads(self.cache_path.read_text(encoding='utf-8'))
             if data.get('version') != 1 or data.get('channel') != CHANNEL or not isinstance(data.get('items'), list): raise NewsError('Invalid news cache.')
             if len(data['items']) > MAX_ITEMS: raise NewsError('Oversized news history.')
             self.items = sorted({item['id']: checked_item(item) for item in data['items']}.values(), key=lambda item: item['id'], reverse=True)
             self.last_checked_at = valid_timestamp(data['last_checked_at'])
+            self.history_exhausted = data.get('history_exhausted') is True
+            cursor = data.get('history_cursor')
+            self.history_cursor = cursor if type(cursor) is int and 0 < cursor < 1_000_000_000_000 else self.items[-1]['id'] if self.items else None
         except (OSError, ValueError, TypeError, KeyError, NewsError): self.items = []; self.last_checked_at = None
+
+    def _save(self):
+        try:
+            self.cache_path.parent.mkdir(parents=True, exist_ok=True); temporary = self.cache_path.with_suffix('.tmp')
+            temporary.write_text(json.dumps({'version': 1, 'channel': CHANNEL, 'last_checked_at': self.last_checked_at,
+                                            'items': self.items, 'history_exhausted': self.history_exhausted, 'history_cursor': self.history_cursor}, ensure_ascii=False), encoding='utf-8')
+            temporary.replace(self.cache_path)
+        except OSError: self.cache_warning = 'The news is available, but recent posts could not be saved locally.'
+
+    def _rate_limit(self, exc):
+        if not isinstance(exc, HTTPError) or exc.code != 429: return
+        try: delay = min(300, max(POLL_SECONDS, int(exc.headers.get('Retry-After', POLL_SECONDS))))
+        except (ValueError, TypeError): delay = 60
+        deadline = self.monotonic() + delay
+        self.next_check = max(self.next_check, deadline); self.next_history_check = max(self.next_history_check, deadline)
+
+    def _result(self):
+        age = (datetime.now(timezone.utc) - datetime.fromisoformat(self.last_checked_at)).total_seconds() if self.last_checked_at else None
+        status = 'disabled' if not self.enabled else 'unavailable' if not self.items else 'stale' if self.error or age is None or age > 30 else 'ready'
+        return {'channel': {'username': CHANNEL, 'title': 'Market News Feed', 'url': CHANNEL_URL, 'preview_url': PREVIEW_URL},
+                'status': status, 'items': deepcopy(self.items), 'poll_interval_seconds': POLL_SECONDS,
+                'last_checked_at': self.last_checked_at, 'last_attempt_at': self.last_attempt_at,
+                'retry_after_seconds': max(0, math.ceil(self.next_check - self.monotonic())),
+                'error': self.error if self.enabled else 'The Telegram news connection is disabled on this server.',
+                'error_code': self.error_code if self.enabled else 'disabled', 'cache_warning': self.cache_warning,
+                'history_limit': MAX_ITEMS, 'has_more_history': self.enabled and bool(self.items) and not self.history_exhausted and (len(self.items) < MAX_ITEMS or self.history_cursor is not None and self.history_cursor > self.items[-1]['id']),
+                'history_before': self.history_cursor,
+                'oldest_id': self.items[-1]['id'] if self.items else None, 'history_exhausted': self.history_exhausted,
+                'history_error': self.history_error, 'history_error_code': self.history_error_code,
+                'history_retry_after_seconds': max(0, math.ceil(self.next_history_check - self.monotonic()))}
+
+    def load_history(self, before):
+        if type(before) is not int or not 0 < before < 1_000_000_000_000: raise NewsError('Invalid Telegram history cursor.')
+        with self.lock:
+            # Only the tracked history cursor is allowed. Concurrent users
+            # receive an already-expanded archive instead of downloading twice.
+            if (not self.enabled or not self.items or self.history_exhausted or
+                len(self.items) >= MAX_ITEMS and before <= self.items[-1]['id'] or
+                before != self.history_cursor or self.monotonic() < self.next_history_check): return self._result()
+            if before == 1:
+                self.history_exhausted = True; self.history_error = self.history_error_code = None; self._save(); return self._result()
+            self.next_history_check = self.monotonic() + HISTORY_INTERVAL
+            try:
+                page = parse_preview(self.history_transport(before), allow_empty=True)
+                older = [item for item in page if item['id'] < before]
+                if page and not older: raise NewsError('Telegram did not return an older page. Saved news is retained; retry loading older posts.')
+                if not page: self.history_exhausted = True
+                if older: self.history_cursor = min(item['id'] for item in older)
+                merged = {item['id']: item for item in self.items}; merged.update({item['id']: item for item in older})
+                self.items = sorted(merged.values(), key=lambda item: item['id'], reverse=True)[:MAX_ITEMS]
+                self.history_error = self.history_error_code = None; self.cache_warning = None; self._save()
+            except (OSError, HTTPException, ValueError, TypeError, KeyError, NewsError) as exc:
+                self.history_error_code, self.history_error = connection_failure(exc)
+                self.next_history_check = max(self.next_history_check, self.monotonic() + POLL_SECONDS); self._rate_limit(exc)
+            # Loading old messages never advances the latest-feed check time or
+            # clears an outage in the independent ten-second live update path.
+            return self._result()
 
     def view(self):
         with self.lock:
@@ -191,25 +262,14 @@ class TelegramNewsService:
                 try:
                     newest = parse_preview(self.transport())
                     if self.items and max(item['id'] for item in newest) < self.items[0]['id']: raise NewsError('Telegram returned an older preview; saved news has been retained.')
+                    if not self.items or (not {item['id'] for item in newest}.intersection(item['id'] for item in self.items) and min(item['id'] for item in newest) > self.items[0]['id'] + 1):
+                        self.history_cursor = min(item['id'] for item in newest); self.history_exhausted = False
                     merged = {item['id']: item for item in self.items}; merged.update({item['id']: item for item in newest})
                     self.items = sorted(merged.values(), key=lambda item: item['id'], reverse=True)[:MAX_ITEMS]
                     self.last_checked_at = datetime.now(timezone.utc).isoformat(); self.error = self.error_code = None
-                    try:
-                        self.cache_path.parent.mkdir(parents=True, exist_ok=True); temporary = self.cache_path.with_suffix('.tmp')
-                        temporary.write_text(json.dumps({'version': 1, 'channel': CHANNEL, 'last_checked_at': self.last_checked_at, 'items': self.items}), encoding='utf-8'); temporary.replace(self.cache_path)
-                    except OSError: self.cache_warning = 'The feed is current, but recent news could not be saved locally.'
+                    self._save()
                 except (OSError, HTTPException, ValueError, TypeError, KeyError, NewsError) as exc:
                     self.error_code, self.error = connection_failure(exc)
-                    if isinstance(exc, HTTPError) and exc.code == 429:
-                        try: delay = min(300, max(POLL_SECONDS, int(exc.headers.get('Retry-After', POLL_SECONDS))))
-                        except (ValueError, TypeError): delay = 60
-                        self.next_check = self.monotonic() + delay
+                    self._rate_limit(exc)
                 self.next_check = max(self.next_check, attempt_started + POLL_SECONDS)
-            age = (datetime.now(timezone.utc) - datetime.fromisoformat(self.last_checked_at)).total_seconds() if self.last_checked_at else None
-            status = 'disabled' if not self.enabled else 'unavailable' if not self.items else 'stale' if self.error or age is None or age > 30 else 'ready'
-            return {'channel': {'username': CHANNEL, 'title': 'Market News Feed', 'url': CHANNEL_URL, 'preview_url': PREVIEW_URL},
-                    'status': status, 'items': deepcopy(self.items), 'poll_interval_seconds': POLL_SECONDS,
-                    'last_checked_at': self.last_checked_at, 'last_attempt_at': self.last_attempt_at,
-                    'retry_after_seconds': max(0, math.ceil(self.next_check - self.monotonic())),
-                    'error': self.error if self.enabled else 'The Telegram news connection is disabled on this server.',
-                    'error_code': self.error_code if self.enabled else 'disabled', 'cache_warning': self.cache_warning}
+            return self._result()
