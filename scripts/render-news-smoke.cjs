@@ -29,6 +29,13 @@ async function main(){
  const ready=render(feed);
  assert.ok(ready.includes('role="dialog"')&&ready.includes('aria-modal="false"')&&ready.includes('Live · 10s checks'));
  assert.ok(ready.includes('href="https://t.me/marketfeed/123"')&&!ready.includes('href="javascript:'));
+ assert.ok(ready.includes(`href="https://www.google.com/search?q=${encodeURIComponent(feed.items[0].text.replace(/\s+/g,' ').trim())}" target="_blank" rel="noopener noreferrer"`));
+ assert.ok(ready.includes('Search Google')&&ready.includes('Open post in Telegram'));
+ const specialText='Bank of Japan: yen & rates +0.5%? #FX\n日本銀行';
+ const special=render({...feed,items:[{...feed.items[0],text:specialText}]});
+ const googleHref=special.match(/href="(https:\/\/www\.google\.com\/search\?q=[^"]+)"/)[1];
+ assert.equal(new URL(googleHref).searchParams.get('q'),specialText.replace(/\s+/g,' ').trim());
+ assert.ok(!/<a\b[^>]*>(?:(?!<\/a>)[\s\S])*<a\b/.test(special),'Post actions must be separate links, without nested anchors.');
  assert.ok(ready.includes('&lt;script&gt;')&&!ready.includes('<script>untrusted()'));
  assert.ok(ready.includes('dateTime="2026-01-01T12:00:00Z"')&&ready.includes('SGT')&&ready.includes('Close market news'));
  const stale=render({...feed,status:'stale',error:'Synthetic source interruption'});
@@ -46,6 +53,7 @@ async function main(){
  assert.ok(noMatches.includes('No matching news')&&!noMatches.includes('Waiting for a connection'));
  const full=render({...archive,has_more_history:false,items:Array.from({length:1000},(_,i)=>({...feed.items[0],id:1000-i,text:`SYNTHETIC ARCHIVE POST ${1000-i}`}))});
  assert.equal((full.match(/class="news-post"/g)||[]).length,1000);
+ assert.equal((full.match(/href="https:\/\/www\.google\.com\/search\?q=/g)||[]).length,1000);
  assert.ok(full.includes('1,000-post history limit reached')&&full.includes('SYNTHETIC ARCHIVE POST 1<'));
  const historyFailed=render({...archive,history_error:'Synthetic history outage'});
  assert.ok(historyFailed.includes('Retry older news')&&historyFailed.includes('Live · 10s checks'));
