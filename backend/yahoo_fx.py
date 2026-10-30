@@ -54,7 +54,7 @@ class YahooFXService:
             meta={k:metadata.get(k) for k in keys}
             bars=[]
             for at,row in frame.iterrows():
-                bars.append({'time':at.isoformat(),'open':float(row['Open']),'high':float(row['High']),'low':float(row['Low']),'close':float(row['Close'])})
+                bars.append({'time':at.isoformat(),**{field:finite_number(row.get(field.title()),True) for field in ('open','high','low','close')}})
             return {'meta':meta,'bars':bars}
         except YahooFXError:raise
         except Exception as exc:
@@ -83,8 +83,12 @@ class YahooFXService:
             requested=data['bars'][-300:] if interval=='1day' else data['bars']
             for item in requested:
                 prices={k:finite_number(item.get(k),True) for k in ['open','high','low','close']}
-                if any(v is None for v in prices.values()) or prices['low']>min(prices['open'],prices['close']) or prices['high']<max(prices['open'],prices['close']):
-                    raise YahooFXError('Yahoo returned invalid FX candle prices.')
+                if prices['close'] is None:raise YahooFXError('Yahoo returned invalid FX closing prices.')
+                valid_ohlc=(all(v is not None for v in prices.values()) and prices['low']<=min(prices['open'],prices['close']) and prices['high']>=max(prices['open'],prices['close']))
+                # This is a closing-price line chart. Preserve the reported close
+                # independently; inconsistent ranges remain unavailable, never
+                # widened, repaired, interpolated or obtained from another feed.
+                if not valid_ohlc:prices.update(open=None,high=None,low=None)
                 try:
                     at=datetime.fromisoformat(item['time'])
                     if at.tzinfo is None:raise ValueError()
@@ -95,7 +99,7 @@ class YahooFXService:
                     try:today=now.astimezone(ZoneInfo(meta['exchangeTimezoneName'])).date();complete=at.date()<today
                     except (KeyError,TypeError,ZoneInfoNotFoundError):complete=at.date()<now.date()-timedelta(days=1)
                 else:label=at.astimezone(timezone.utc).strftime('%Y-%m-%d %H:%M:%S');complete=at+timedelta(minutes=60 if interval=='1h' else 5)<=now
-                row={'date':label,'time':at.astimezone(timezone.utc).isoformat(),'complete':complete,**prices}
+                row={'date':label,'time':at.astimezone(timezone.utc).isoformat(),'complete':complete,'ohlc_available':valid_ohlc,**prices}
                 if label in bars and bars[label]!=row:raise YahooFXError('Yahoo returned conflicting candles for the same FX timestamp.')
                 bars[label]=row
             return {'meta':meta,'bars':[bars[label] for label in sorted(bars)],'fetched_at':now.isoformat()}
@@ -135,7 +139,9 @@ class YahooFXService:
         if interval not in ['1day','1h','5min']:raise ValueError('Supported FX intervals: 1day, 1h, 5min.')
         data=self.series(pair,interval);bars=data['bars'][-300:] if interval=='1day' else data['bars'][-168:] if interval=='1h' else data['bars'][-288:]
         completed=[b for b in bars if b['complete']]
+        unavailable=[bar['date'] for bar in bars if not bar['ohlc_available']]
         return {'source':self.name,'provider':'yahoo','yahoo_symbol':yahoo_symbol(pair),'symbol':pair,'interval':interval,'bars':bars,
             'fetched_at':data['fetched_at'],'session_timezone':data['meta'].get('exchangeTimezoneName'),'analytics':fx_metrics(bars) if interval=='1day' else None,
             'analytics_as_of':completed[-1]['date'] if completed else None,
-            'methodology':'Yahoo candles through yfinance; may be delayed. Daily dates follow the reported Yahoo session timezone; intraday times are UTC. Analytics use only completed candles, with 20 daily returns and a 252-observation volatility convention. No bars are spliced across providers, and carry/costs are excluded.'}
+            'data_quality':{'mode':'reported_closes','unavailable_ohlc_count':len(unavailable),'unavailable_ohlc_dates':unavailable},
+            'methodology':'Unadjusted Yahoo closing prices through yfinance; may be delayed. Invalid closes, identity mismatches and invalid timestamps reject the series. Where the source OHLC range is missing or inconsistent, open/high/low are null and ohlc_available is false; the source close remains unchanged. No synthetic candle ranges are constructed. Daily dates follow the reported Yahoo session timezone; intraday times are UTC. Analytics use only completed source closes, with 20 daily returns and a 252-observation volatility convention. No bars are spliced across providers, and carry/costs are excluded.'}

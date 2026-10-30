@@ -7,6 +7,7 @@ data/
 test-results/
 playwright-report/
 .env
+.fx-config-*
 .env.*
 !.env.example
 !.env.sample

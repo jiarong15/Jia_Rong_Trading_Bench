@@ -1,4 +1,5 @@
 from pathlib import Path
+from importlib.util import find_spec
 from typing import Literal
 from uuid import uuid4
 import os
@@ -18,6 +19,8 @@ from .nasdaq import NasdaqService
 from .twelvedata import TwelveDataService, TwelveDataError, DEFAULT_PAIRS, pairs_from, pair_from
 from .yahoo_fx import YahooFXService
 from .fx_sources import FXSources
+from .config import load_backend_env, project_id
+from .credentials import twelvedata_status
 from .bop import BOPService, BOPError
 from .bop_macro import BOPMacroService
 from .bop_japan import JapanBOPService
@@ -78,6 +81,7 @@ class ImplementationRequest(BaseModel):
     tax_rate: float|None=Field(default=None,ge=0,le=1)
 
 def create_app(db_path=None):
+    if db_path is None:load_backend_env()
     app=FastAPI(title='Meridian Investment Workbench',version='0.1.0')
     provider=DemoProvider();store=Store(db_path or os.environ.get('WORKBENCH_DB',str(Path(__file__).parent.parent/'data'/'workbench.sqlite3')))
     app.state.store=store;app.state.provider=provider
@@ -127,7 +131,12 @@ def create_app(db_path=None):
             return JSONResponse(status_code=403,content={'detail':'Cross-origin writes are not permitted.'})
         response=await call_next(request);response.headers['X-Content-Type-Options']='nosniff';return response
     @app.get('/api/health')
-    def health(): return {'status':'ok','mode':'synthetic-paper','snapshot':AS_OF}
+    def health(): return {'status':'ok','mode':'synthetic-paper','snapshot':AS_OF,'process_id':os.getpid(),'project_id':project_id()}
+    @app.get('/api/fx/status')
+    def fx_status(response:Response):
+        response.headers['Cache-Control']='no-store'
+        return {'primary_provider':fx_sources.primary,'yahoo':{'enabled':yahoo.enabled,'package_present':find_spec('yfinance') is not None,'api_key_required':False},
+                'twelvedata':{'enabled':fx.enabled,**twelvedata_status()},'providers':fx_sources.providers()}
     @app.get('/api/news/telegram')
     def telegram_news(response:Response):
         response.headers['Cache-Control']='no-store'

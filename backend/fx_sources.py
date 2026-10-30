@@ -39,9 +39,9 @@ class FXSources:
                 if provider=='yahoo':
                     if getattr(exc,'scope','pair')=='provider':self.health[provider].update(state='cooldown',retry_at=now+timedelta(minutes=5))
                     else:
-                        # Invalid historical OHLC rarely changes within a few
+                        # Invalid historical closes rarely change within a few
                         # minutes. Match the daily cache horizon before retrying.
-                        pause=21600 if kind=='history' and interval=='1day' and 'candle prices' in message else 300
+                        pause=21600 if kind=='history' and interval=='1day' and ('candle prices' in message or 'closing prices' in message) else 300
                         self.pair_failures[failure_key]=(now+timedelta(seconds=pause),message)
                         if len(self.pair_failures)>100:self.pair_failures.pop(next(iter(self.pair_failures)))
                         self.health[provider]['state']='some requests unavailable'

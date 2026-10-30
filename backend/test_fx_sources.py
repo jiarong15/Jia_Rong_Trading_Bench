@@ -73,7 +73,7 @@ def test_history_falls_back_as_a_whole_without_splicing_candles(tmp_path):
     def invalid_daily(symbol,interval,period):
         calls.append(interval)
         data=yahoo_transport(symbol,interval,period)
-        if interval=='1d':data['bars'][0]['low']=99
+        if interval=='1d':data['bars'][0]['close']=float('nan')
         return data
     fx=sources(tmp_path,yahoo_override=invalid_daily)
     history=fx.history('EUR/USD')
@@ -114,3 +114,36 @@ def test_daily_and_intraday_completion_follow_actual_session_timezone(tmp_path):
     assert daily['analytics']['completed_observations']==100
     assert intraday['bars'][-1]['complete'] is False
     assert daily['session_timezone']=='UTC' and intraday['bars'][-1]['time'].endswith('+00:00')
+
+
+@pytest.mark.parametrize('field,value',[('low',99),('high',0),('open',None),('low',float('nan'))])
+def test_source_closes_survive_unusable_ohlc_without_repairs_or_backup_credits(tmp_path,field,value):
+    calls=[]
+    def bad_range(symbol,interval,period):
+        data=yahoo_transport(symbol,interval,period);data['bars'][0][field]=value;return data
+    def counted(*args):calls.append(args);return twelve_transport(*args)
+    fx=sources(tmp_path,yahoo_override=bad_range,twelve_override=counted)
+    history=fx.history('EUR/USD');original=yahoo_transport('EURUSD=X','1d','2y')
+    assert history['provider']=='yahoo' and not history['fallback'] and calls==[]
+    assert [bar['close'] for bar in history['bars']]==[bar['close'] for bar in original['bars']]
+    bar=history['bars'][0]
+    assert not bar['ohlc_available'] and all(bar[field] is None for field in ('open','high','low'))
+    assert history['data_quality']['unavailable_ohlc_count']==1
+    assert history['data_quality']['unavailable_ohlc_dates']==[bar['date']]
+    assert history['analytics']==sources(tmp_path).yahoo.history('EUR/USD')['analytics']
+
+
+@pytest.mark.parametrize('value',[None,float('nan'),float('inf'),0,-1,True])
+def test_invalid_closes_still_reject_yahoo_history(tmp_path,value):
+    def invalid(symbol,interval,period):
+        data=yahoo_transport(symbol,interval,period);data['bars'][0]['close']=value;return data
+    history=sources(tmp_path,yahoo_override=invalid).history('EUR/USD')
+    assert history['provider']=='twelvedata' and history['fallback']
+    assert 'invalid FX closing prices' in history['fallback_reason']
+
+
+def test_good_closes_do_not_relax_symbol_or_timestamp_validation(tmp_path):
+    def future(symbol,interval,period):
+        data=yahoo_transport(symbol,interval,period);data['bars'][0]['time']=(NOW+timedelta(days=1)).isoformat();return data
+    history=sources(tmp_path,yahoo_override=future).history('EUR/USD')
+    assert history['provider']=='twelvedata' and 'timestamp' in history['fallback_reason']

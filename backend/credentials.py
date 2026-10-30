@@ -25,7 +25,21 @@ def alpaca_credentials():
     return data['key'],data['secret']
 
 def twelvedata_key():
-    return os.environ.get('TWELVEDATA_API_KEY') or encrypted_credentials('twelvedata','Twelve Data')['key']
+    key=os.environ.get('TWELVEDATA_API_KEY','').strip()
+    if not key:
+        data=encrypted_credentials('twelvedata','Twelve Data')
+        if not isinstance(data,dict):raise ValueError('Twelve Data credentials are invalid on the backend.')
+        key=data.get('key','')
+        if not isinstance(key,str):raise ValueError('Twelve Data credentials are invalid on the backend.')
+        key=key.strip()
+    if not key:raise ValueError('Twelve Data credentials are not configured on the backend.')
+    return key
+
+def twelvedata_status():
+    try:
+        twelvedata_key()
+        return {'configured':True,'source':'backend environment or .env' if os.environ.get('TWELVEDATA_API_KEY','').strip() else 'Windows user-encrypted credential'}
+    except (OSError,ValueError,TypeError,KeyError):return {'configured':False,'source':None}
 
 def nasdaq_key():
     return os.environ.get('NASDAQ_DATA_LINK_API_KEY') or encrypted_credentials('nasdaq','Nasdaq Data Link')['key']

@@ -44,8 +44,9 @@ def fx_metrics(bars):
     return result
 
 class TwelveDataService:
-    def __init__(self,enabled=True,transport=None,clock=None):
+    def __init__(self,enabled=True,transport=None,clock=None,key_getter=None):
         self.enabled=enabled;self.transport=transport;self.clock=clock or (lambda:datetime.now(timezone.utc))
+        self.key_getter=key_getter or twelvedata_key
         self.lock=RLock();self.cache={};self.minute=None;self.day=None;self.used=0;self.daily_used=0
         self.limit=8;self.daily_limit=800;self.plan='unknown';self.initialized=False;self.usage_observed_at=None;self.blocked_until=None
     def rollover(self):
@@ -64,6 +65,12 @@ class TwelveDataService:
         with self.lock:
             now=self.rollover()
             if not self.enabled and self.transport is None:raise TwelveDataError('Live FX is disabled in this isolated test instance.')
+            key=None
+            if self.transport is None:
+                try:key=self.key_getter()
+                except (OSError,ValueError,KeyError,TypeError):
+                    raise TwelveDataError('Twelve Data is not configured on this computer. Run python scripts/configure-fx.py or set backend TWELVEDATA_API_KEY, then restart the server.') from None
+                if not isinstance(key,str) or not key.strip():raise TwelveDataError('Twelve Data has no configured backend API key. Run python scripts/configure-fx.py, then restart the server.')
             if metered:
                 if self.blocked_until and self.blocked_until>now:
                     wait=int((self.blocked_until-now).total_seconds())+1
@@ -79,13 +86,13 @@ class TwelveDataService:
                 if self.transport:result=self.transport(path,params or {});payload,headers=result if isinstance(result,tuple) else (result,{})
                 else:
                     url='https://api.twelvedata.com'+path+('?' + urllib.parse.urlencode(params) if params else '')
-                    req=urllib.request.Request(url,headers={'Authorization':'apikey '+twelvedata_key(),'Accept':'application/json'})
+                    req=urllib.request.Request(url,headers={'Authorization':'apikey '+key.strip(),'Accept':'application/json'})
                     with urllib.request.urlopen(req,timeout=20) as response:payload=json.load(response);headers=dict(response.headers)
             except urllib.error.HTTPError as exc:
                 raise self.provider_error(exc.code) from None
             except (OSError,ValueError) as exc:
                 if isinstance(exc,TwelveDataError):raise
-                raise TwelveDataError('Twelve Data is unavailable or credentials are not configured. No demo quotes were substituted.') from None
+                raise TwelveDataError('Twelve Data could not be reached or returned invalid data. Check this computer\'s network access. No demo quotes were substituted.') from None
             normalized={k.lower():v for k,v in headers.items()}
             try:
                 used=int(normalized.get('api-credits-used',self.used))
