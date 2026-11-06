@@ -20,6 +20,8 @@ for (const extension of ['.tsx', '.ts']) {
 const pages = require('../src/pages.tsx');
 const EquitiesPage = require('../src/EquitiesPage.tsx').default;
 const FxPage = require('../src/FxPage.tsx').default;
+const BondsPage = require('../src/BondsPage.tsx').default;
+const RatesPage = require('../src/RatesPage.tsx').default;
 const { BopContent } = require('../src/BopSection.tsx');
 const { normalizeRows } = require('../src/bopNormalize.ts');
 const chartModule = require('../src/BopChart.tsx');
@@ -36,7 +38,9 @@ async function main() {
   const props = { data, reload: async () => {}, notify: () => {}, onOpen: () => {} };
   const cases = [
     ['Overview', pages.Overview, {}],
-    ...['bonds', 'rates', 'commodities'].map(asset => [asset, pages.AssetPage, { asset }]),
+    ['bonds', BondsPage, {}],
+    ['rates', RatesPage, {}],
+    ['commodities', pages.AssetPage, { asset: 'commodities' }],
     ['equities', EquitiesPage, {}],
     ['fx', FxPage, {}],
     ['Research', pages.ResearchPage, {}],

@@ -4,8 +4,8 @@
 .bop-heading h2{font-size:23px;letter-spacing:-.7px;display:flex;align-items:center;gap:10px;margin:9px 0;color:#263c4c}
 .bop-heading h2 svg{color:#388675}
 .bop-heading-actions{display:flex;flex-direction:column;align-items:flex-end;gap:12px}
-.bop-country-tabs{display:flex;gap:6px;padding:6px;background:#eaf0ee;border:1px solid #e1e8e5;border-radius:9px;margin-bottom:18px;overflow-x:auto}
-.bop-country-tabs button{flex:1;min-width:98px;padding:12px 15px;border:1px solid transparent;border-radius:6px;background:transparent;display:flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap}
+.bop-country-tabs{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(164px,1fr);gap:6px;padding:6px;background:#eaf0ee;border:1px solid #e1e8e5;border-radius:9px;margin-bottom:18px;overflow-x:auto;overscroll-behavior-x:contain}
+.bop-country-tabs button{min-width:0;padding:12px 15px;border:1px solid transparent;border-radius:6px;background:transparent;display:flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap}
 .bop-country-tabs button span{font-size:12px;font-weight:650;color:#687d79}
 .bop-country-tabs button small{font-size:8px;color:#859890}
 .bop-country-tabs button.active{background:#fff;border-color:#d7e1dc;box-shadow:0 2px 5px #263c4c08}

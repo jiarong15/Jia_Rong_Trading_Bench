@@ -29,6 +29,12 @@ def test_env_is_literal_and_diagnostics_never_echo_values(tmp_path):
     assert 'line 1' in str(exc.value) and 'sensitive' not in str(exc.value)
 
 
+def test_volatility_report_setting_loads_without_broker_credentials(tmp_path):
+    (tmp_path/'.env').write_text('FX_SAXO_REPORT_ENABLED=true\nTASTYTRADE_CLIENT_SECRET=ignored\nTASTYTRADE_REFRESH_TOKEN=ignored\nFX_TASTYTRADE_ENABLED=true\nVITE_SECRET=never-load\n',encoding='utf-8')
+    env={};load_backend_env(tmp_path,env)
+    assert env == {'FX_SAXO_REPORT_ENABLED':'true'}
+
+
 def test_key_writer_preserves_settings_replaces_duplicates_and_rejects_injection(tmp_path):
     path=tmp_path/'.env';path.write_text('# private\nYAHOO_FX_ENABLED=true\nTWELVEDATA_API_KEY=old\nexport TWELVEDATA_API_KEY=duplicate\n',encoding='utf-8')
     save_twelvedata_key('new-test-key',tmp_path)

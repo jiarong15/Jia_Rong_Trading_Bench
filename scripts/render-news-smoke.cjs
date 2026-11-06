@@ -12,6 +12,8 @@ for(const extension of ['.tsx','.ts'])require.extensions[extension]=function(mod
 };
 const App=require('../src/App.tsx').default;
 const {NewsWindow}=require('../src/NewsWidget.tsx');
+const {CalendarWindow}=require('../src/EconomicCalendar.tsx');
+const {singaporeDate,tradaysWidgetUrl}=require('../src/tradaysCalendar.ts');
 async function main(){
  const response=await fetch('http://127.0.0.1:8000/api/workspace');assert.ok(response.ok);const workspace=await response.json();
  const useState=React.useState;
@@ -22,6 +24,15 @@ async function main(){
   try{html=renderToString(React.createElement(MemoryRouter,{initialEntries:[route]},React.createElement(App)));}finally{React.useState=useState;}
   assert.equal((html.match(/class="news-widget"/g)||[]).length,1,`News launcher missing or duplicated on ${route}`);
   assert.ok(html.includes('aria-label="Open market news"')&&html.includes('aria-expanded="false"'));
+  assert.ok(html.includes('aria-label="Open economic calendar"')&&html.includes('aria-controls="economic-calendar-window"'));
+  if(route==='/markets/bonds'){
+   assert.ok(html.includes('Official sovereign yields')&&html.includes('bonds-quotes'));
+   assert.ok(html.includes('aria-label="Bonds country"')&&html.includes('Singapore')&&html.includes('Canada'));
+   for(const key of ['2s10s','3m10s','5s30s','5s10s','10s30s','2s5s10s','2s10s30s'])assert.ok(html.includes(`<h3>${key}</h3>`));
+   assert.equal((html.match(/<details class="bonds-analytics">/g)||[]).length,2,'Both chart sections start collapsed');
+   assert.ok(!html.includes('Sources and calculation conventions'));
+   assert.ok(!html.includes('SYNTHETIC SNAPSHOT')&&!html.includes('Source: fixture provider'));
+  }
   console.log(`PASS shared news launcher: ${route}`);
  }
  const feed={channel:{username:'marketfeed',title:'Market News Feed',url:'https://t.me/marketfeed'},status:'ready',items:[{id:123,text:'<script>untrusted()</script>\nSYNTHETIC TEST HEADLINE',published_at:'2026-01-01T12:00:00Z',url:'javascript:bad()'}],poll_interval_seconds:10,last_checked_at:new Date().toISOString(),last_attempt_at:new Date().toISOString(),retry_after_seconds:10,error:null,cache_warning:null};
@@ -57,6 +68,18 @@ async function main(){
  assert.ok(full.includes('1,000-post history limit reached')&&full.includes('SYNTHETIC ARCHIVE POST 1<'));
  const historyFailed=render({...archive,history_error:'Synthetic history outage'});
  assert.ok(historyFailed.includes('Retry older news')&&historyFailed.includes('Live · 10s checks'));
+ const calendarHtml=renderToString(React.createElement(CalendarWindow,{onClose:()=>{}}));
+ assert.ok(calendarHtml.includes('Tradays')&&calendarHtml.includes('Yesterday')&&calendarHtml.includes('Tomorrow'));
+ assert.ok(calendarHtml.includes('importance=8')&&calendarHtml.includes('date_mode=0'));
+ assert.ok(calendarHtml.includes('class="tradays-frame"'));
+ assert.ok(calendarHtml.includes('Opening Tradays')&&!calendarHtml.includes('Connected')&&!calendarHtml.includes('hourly source'));
+ assert.ok(calendarHtml.includes('Reload Tradays calendar'));
+ assert.ok(!calendarHtml.includes('ecw-copyright')&&!calendarHtml.includes('calendar-notice')&&!calendarHtml.includes('news-window-footer'));
+ assert.equal((calendarHtml.match(/aria-controls="tradays-main-calendar"/g)||[]).length,3);
+ assert.equal((calendarHtml.match(/aria-pressed="false"/g)||[]).length,3);
+ const src=calendarHtml.match(/<iframe[^>]+src="([^"]+)"/)[1].replaceAll('&amp;','&');
+ assert.equal(src,tradaysWidgetUrl(singaporeDate()));
+ console.log('PASS Tradays embed: official iframe, high-impact three-day settings, attribution, loading state, timezone and reload controls.');
  console.log('PASS news window: ready, saved, unavailable, loading, safe text/links and timestamps. Browser layout and interaction are not verified by server rendering.');
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

@@ -1,4 +1,5 @@
 from pathlib import Path
+from contextlib import asynccontextmanager
 from importlib.util import find_spec
 from typing import Literal
 from uuid import uuid4
@@ -19,6 +20,9 @@ from .nasdaq import NasdaqService
 from .twelvedata import TwelveDataService, TwelveDataError, DEFAULT_PAIRS, pairs_from, pair_from
 from .yahoo_fx import YahooFXService
 from .fx_sources import FXSources
+from .fx_carry_risk import FXCarryRiskService
+from .us_rates import USRatesService
+from .fx_options import FXOptionsService
 from .config import load_backend_env, project_id
 from .credentials import twelvedata_status
 from .bop_portability import inspect_views
@@ -33,6 +37,9 @@ from .bop_new_zealand import NewZealandBOPService
 from .bop_switzerland import SwitzerlandBOPService
 from .bop_canada import CanadaBOPService
 from .telegram_news import TelegramNewsService
+from .tradays_focus import TradaysFocusService
+from .treasury_yields import TreasuryYieldService
+from .sovereign_yields import SovereignYields
 from datetime import datetime, timezone
 from copy import deepcopy
 
@@ -83,7 +90,20 @@ class ImplementationRequest(BaseModel):
 
 def create_app(db_path=None):
     if db_path is None:load_backend_env()
-    app=FastAPI(title='Meridian Investment Workbench',version='0.1.0')
+    @asynccontextmanager
+    async def lifespan(application):
+        source=application.state.fx_carry_risk.volatility_source
+        inflation=application.state.us_rates.swap_source
+        options=application.state.fx_options
+        if source: source.start()
+        if inflation: inflation.start()
+        options.start()
+        try: yield
+        finally:
+            if source: source.close()
+            if inflation: inflation.close()
+            options.close()
+    app=FastAPI(title='Meridian Investment Workbench',version='0.1.0',lifespan=lifespan)
     provider=DemoProvider();store=Store(db_path or os.environ.get('WORKBENCH_DB',str(Path(__file__).parent.parent/'data'/'workbench.sqlite3')))
     app.state.store=store;app.state.provider=provider
     equities=AlpacaService(enabled=db_path is None and os.environ.get('ALPACA_ENABLED','true').lower()!='false')
@@ -98,6 +118,13 @@ def create_app(db_path=None):
     app.state.yahoo_fx=yahoo
     fx_sources=FXSources(yahoo,fx,primary=os.environ.get('FX_PRIMARY_PROVIDER','yahoo'))
     app.state.fx_sources=fx_sources
+    fx_carry_risk=FXCarryRiskService(Path(store.path).parent/'fx-carry-risk.json',enabled=db_path is None)
+    app.state.fx_carry_risk=fx_carry_risk
+    fx_options=FXOptionsService(Path(store.path).parent/'fx-option-trades.json',fx_carry_risk,
+                               enabled=db_path is None and os.environ.get('FX_OPTIONS_ENABLED','true').lower()=='true')
+    app.state.fx_options=fx_options
+    us_rates=USRatesService(Path(store.path).parent/'us-rates.json',enabled=db_path is None and os.environ.get('RATES_ENABLED','true').lower()=='true')
+    app.state.us_rates=us_rates
     bop=BOPService(Path(store.path).parent/'bop-cache'/'usa.json',enabled=db_path is None and os.environ.get('BOP_ENABLED','true').lower()!='false')
     app.state.bop=bop
     bop_macro=BOPMacroService(Path(store.path).parent/'bop-cache'/'usa-macro.json',enabled=db_path is None and os.environ.get('BOP_ENABLED','true').lower()!='false')
@@ -126,6 +153,12 @@ def create_app(db_path=None):
         return result
     news=TelegramNewsService(Path(store.path).parent/'telegram-news.json',enabled=db_path is None and os.environ.get('TELEGRAM_NEWS_ENABLED','true').lower()!='false')
     app.state.telegram_news=news
+    calendar_focus=TradaysFocusService(enabled=db_path is None)
+    app.state.tradays_focus=calendar_focus
+    treasury_yields=TreasuryYieldService(Path(store.path).parent/'treasury-yields.json',enabled=db_path is None and os.environ.get('BONDS_ENABLED','true').lower()!='false')
+    app.state.treasury_yields=treasury_yields
+    sovereign_yields=SovereignYields(treasury_yields,Path(store.path).parent/'bond-countries',enabled=db_path is None and os.environ.get('BONDS_ENABLED','true').lower()!='false')
+    app.state.sovereign_yields=sovereign_yields
     @app.exception_handler(TwelveDataError)
     async def fx_error(_request,exc):
         return JSONResponse(status_code=exc.code,content={'detail':str(exc),'retry_after_seconds':exc.retry_after},headers={'Retry-After':str(exc.retry_after)} if exc.retry_after else None)
@@ -152,8 +185,29 @@ def create_app(db_path=None):
     def telegram_news_history(response:Response,before:int=Query(gt=0,lt=1_000_000_000_000)):
         response.headers['Cache-Control']='no-store'
         return news.load_history(before)
+    @app.get('/api/calendar/tradays/focus')
+    def tradays_focus(response:Response):
+        response.headers['Cache-Control']='no-store'
+        return calendar_focus.view()
+    @app.get('/api/bonds/treasury')
+    def treasury_market(response:Response,refresh:bool=False,country:Literal['USA','CHN','JPN','GBR','CAN','SGP']='USA',saved_only:bool=False):
+        response.headers['Cache-Control']='no-store'
+        return sovereign_yields.view(country,refresh=refresh,saved_only=saved_only)
     @app.get('/api/fx/market')
     def fx_market(pairs:str=','.join(DEFAULT_PAIRS)):return fx_sources.market(pairs_from(pairs))
+    @app.get('/api/rates/us')
+    def us_rates_market(response:Response,refresh:bool=False,saved_only:bool=False):
+        response.headers['Cache-Control']='no-store'
+        return us_rates.view(refresh=refresh,saved_only=saved_only)
+    @app.get('/api/fx/options/heatmap')
+    def fx_options_heatmap(response:Response,pair:str='EUR/USD',window_days:int=30,refresh:bool=False,saved_only:bool=False):
+        response.headers['Cache-Control']='no-store'
+        return fx_options.view(pair,window_days,refresh=refresh,saved_only=saved_only)
+    @app.get('/api/fx/carry-risk')
+    def fx_carry_risk_view(response:Response,weeks:int=Query(default=52,ge=26,le=104),refresh:bool=False,saved_only:bool=False):
+        if weeks not in (26,52,104):raise HTTPException(422,'Choose a 26, 52 or 104 week correlation window.')
+        response.headers['Cache-Control']='no-store'
+        return fx_carry_risk.view(weeks=weeks,refresh=refresh,saved_only=saved_only)
     @app.get('/api/fx/search')
     def fx_search(q:str=Query(default='',max_length=100),offset:int=Query(default=0,ge=0),limit:int=Query(default=25,ge=1,le=100)):
         return fx_sources.search(q,offset,limit)

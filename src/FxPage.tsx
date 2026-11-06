@@ -5,6 +5,8 @@ import {api,download} from './api';
 import {Badge,Change,Metric,PageTitle,Panel,number,signed,stamp} from './components';
 import type {PageProps} from './pages';
 import BopSection from './BopSection';
+import FxCarryRisk from './FxCarryRisk';
+import FxOptionsHeatmap from './FxOptionsHeatmap';
 
 type Quote={symbol:string;base:string;quote:string;name:string;price:number|null;change_pct:number|null;previous_close?:number|null;high?:number|null;low?:number|null;quote_time:string|null;timestamp_kind?:string;market_open:boolean|null;stale:boolean;error:string|null;fetched_at?:string;source?:string;provider?:string;fallback?:boolean;fallback_reason?:string|null;market_state_basis?:string;stale_after_seconds?:number};
 type Quota={plan:string;minute_limit:number;minute_used:number;minute_remaining:number;daily_limit:number|null;daily_used_observed:number;daily_remaining_observed:number|null;retry_after_seconds:number;note:string;initialized?:boolean};
@@ -75,6 +77,8 @@ export default function FxPage({notify}:PageProps){
    </div></div>
    <div className="table-scroll"><table><thead><tr><th>CURRENCY PAIR</th><th className="num">RATE</th><th className="num">DAY CHANGE</th><th className="num">SESSION HIGH / LOW</th><th>QUOTE TIME · SGT</th><th><span className="sr-only">Remove pair</span></th></tr></thead><tbody>{(market?.rows??[]).filter(row=>pairs.includes(row.symbol)).map(row=><tr key={row.symbol} className={selected===row.symbol?'equity-selected':''}><td><button className="instrument-name" onClick={()=>setSelected(row.symbol)}><span className="instrument-avatar fx">{row.base}</span><span><strong>{row.symbol}</strong><small>{row.name}</small></span></button></td><td className="num">{fmt(row.price,decimals(row.symbol))}<small className="unit">{row.quote} per {row.base}</small></td><td className="num">{row.change_pct==null?'Unavailable':<Change value={row.change_pct}/>}</td><td className="num">{fmt(row.high,decimals(row.symbol))} / {fmt(row.low,decimals(row.symbol))}</td><td>{row.quote_time?stamp(row.quote_time):'Unavailable'}</td><td><button className="icon-button" disabled={pairs.length<=1} aria-label={`Remove ${row.symbol} from FX comparison`} onClick={()=>removePair(row.symbol)}><X size={14}/></button></td></tr>)}</tbody></table>{!market&&<p className="padded muted">{busy?'Retrieving currency quotes...':'No live quotes loaded.'}</p>}</div>
   </Panel>
+  <FxCarryRisk refresh={refresh}/>
   <BopSection/>
+  <FxOptionsHeatmap refresh={refresh}/>
  </>;
 }

@@ -1,6 +1,7 @@
 import {useCallback,useEffect,useMemo,useRef,useState} from 'react';
 import type {Ref} from 'react';
-import {ArrowUpRight,MessageSquareText,Radio,RefreshCw,Search,X} from 'lucide-react';
+import {ArrowUpRight,CalendarDays,MessageSquareText,Radio,RefreshCw,Search,X} from 'lucide-react';
+import {CalendarWindow} from './EconomicCalendar';
 import {api} from './api';
 import {filterNewsItems,newPostCount,watchNewsRefresh} from './newsRefresh';
 import type {NewsItem} from './newsRefresh';
@@ -34,6 +35,9 @@ export function NewsWindow({feed,busy,error,onClose,onRetry,closeRef,query='',on
 }
 
 export default function NewsWidget(){
+ const [calendarOpen,setCalendarOpen]=useState(false);const calendarTrigger=useRef<HTMLButtonElement>(null);const calendarClose=useRef<HTMLButtonElement>(null);
+ const closeCalendar=useCallback(()=>{setCalendarOpen(false);calendarTrigger.current?.focus();},[]);
+ useEffect(()=>{if(!calendarOpen)return;calendarClose.current?.focus();const keys=(event:KeyboardEvent)=>{if(event.key==='Escape'&&!event.defaultPrevented&&!document.querySelector('[aria-modal="true"]')&&document.getElementById('economic-calendar-window')?.contains(document.activeElement)){event.preventDefault();closeCalendar();}};window.addEventListener('keydown',keys);return()=>window.removeEventListener('keydown',keys);},[calendarOpen,closeCalendar]);
  const [open,setOpen]=useState(false);const [feed,setFeed]=useState<NewsFeed|null>(null);const [busy,setBusy]=useState(false);const [error,setError]=useState('');const [unread,setUnread]=useState(0);
  const [query,setQuery]=useState('');const [historyBusy,setHistoryBusy]=useState(false);const [historyError,setHistoryError]=useState('');const [olderRequested,setOlderRequested]=useState(false);
  const feedRef=useRef<NewsFeed|null>(null);const nextHistoryAt=useRef(0);
@@ -80,7 +84,7 @@ export default function NewsWidget(){
  useEffect(()=>{
   if(!open)return;
   closeRef.current?.focus();
-  const keys=(event:KeyboardEvent)=>{if(event.key==='Escape'&&!document.querySelector('[aria-modal="true"]')){event.preventDefault();close();}};
+  const keys=(event:KeyboardEvent)=>{if(event.key==='Escape'&&!event.defaultPrevented&&!document.querySelector('[aria-modal="true"]')&&!document.getElementById('economic-calendar-window')?.contains(document.activeElement)){event.preventDefault();close();}};
   window.addEventListener('keydown',keys);return()=>window.removeEventListener('keydown',keys);
  },[open,close]);
  const toggle=()=>{
@@ -90,7 +94,11 @@ export default function NewsWidget(){
  };
  const connected=isFresh(feed)&&!error;
  return <aside className="news-widget" aria-label="Market news">
+  <div className="feed-windows">
+  {calendarOpen&&<CalendarWindow onClose={closeCalendar} closeRef={calendarClose}/>}
   {open&&<NewsWindow feed={feed} busy={busy} error={error} onClose={close} onRetry={()=>void load()} closeRef={closeRef} query={query} onQueryChange={setQuery} historyBusy={historyBusy||olderRequested} historyError={historyError} onLoadOlder={()=>setOlderRequested(true)}/>}
+  </div>
+  <button ref={calendarTrigger} className={`news-launcher calendar-launcher ${calendarOpen?'active':''}`} type="button" aria-controls="economic-calendar-window" aria-expanded={calendarOpen} aria-label={`${calendarOpen?'Close':'Open'} economic calendar`} onClick={()=>{if(calendarOpen)closeCalendar();else setCalendarOpen(true);}}><CalendarDays size={20}/><span>Economic calendar</span><small className="calendar-provider-label">TRADAYS</small></button>
   <button ref={triggerRef} className={`news-launcher ${open?'active':''}`} type="button" aria-controls="market-news-window" aria-expanded={open} aria-label={`${open?'Close':'Open'} market news${unread?`, ${unread} unread posts`:''}`} onClick={toggle}><MessageSquareText size={20}/><span>News</span><i className={connected?'connected':''} aria-hidden="true"/>{unread>0&&<span className="news-unread" aria-hidden="true">{unread>99?'99+':unread}</span>}</button>
   <span className="sr-only" role="status">{unread>0?`${unread} new market news ${unread===1?'post':'posts'}`:''}</span>
  </aside>;

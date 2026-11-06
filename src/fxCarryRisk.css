@@ -1,0 +1,27 @@
+.fx-carry-risk{margin:30px 0 34px;scroll-margin-top:24px}
+.fx-carry-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:14px}
+.fx-carry-heading h2{font-size:19px;margin:0;color:#29374a}
+.fx-carry-heading p{font-size:12px;color:#8390a5;margin:6px 0 0}
+.fx-carry-controls,.fx-carry-status{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.fx-carry-status{font-size:11px;color:#7e8a9e;margin-bottom:10px}
+.fx-carry-basis{font-size:12px;line-height:1.7;color:#748299;margin:0 0 18px;max-width:1100px}
+.fx-carry-vol-status{display:flex;flex-direction:column;gap:5px;font-size:12px;line-height:1.7;color:#748299;background:#f7faf9;border:1px solid #dce8e3;border-radius:7px;padding:12px 14px;margin:0 0 18px}
+.fx-carry-vol-status strong{color:#415c55}
+.fx-carry-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.fx-carry-grid>.panel{margin:0;min-width:0}
+.fx-carry-grid .panel-heading{align-items:flex-start;gap:12px}
+.fx-carry-chart{height:370px;min-width:0;font-size:11px;color:#78879c}
+.fx-carry-empty{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:28px;color:#8995a8;line-height:1.7}
+.fx-carry-tooltip{background:#fff;border:1px solid #dce4eb;box-shadow:0 5px 24px #26394916;border-radius:9px;padding:13px 16px;display:flex;flex-direction:column;gap:6px;font-size:12px;color:#4a5b70;max-width:330px}
+.fx-carry-tooltip small{color:#7b899a}
+.fx-carry-grid .chart-footer{gap:12px;flex-wrap:wrap;line-height:1.6}
+.fx-carry-error{font-size:12px;line-height:1.7;color:#95623b;background:#fff9ef;border:1px solid #e9ddca;border-radius:7px;padding:10px 14px;margin:12px 0}
+.fx-carry-method{font-size:12px;color:#7d8a9c;margin-top:14px}
+.fx-carry-method summary{cursor:pointer;line-height:2}
+.fx-carry-method p{line-height:1.8;margin:12px 0}
+.fx-carry-method table{min-width:830px}
+.fx-carry-date{display:block;font-size:11px;line-height:1.7}
+.fx-carry-links{display:flex;flex-wrap:wrap;gap:16px;margin-top:12px}
+.fx-carry-links a{color:#388675;text-decoration:none}
+@media(max-width:1100px){.fx-carry-grid{grid-template-columns:1fr}.fx-carry-chart{height:390px}}
+@media(max-width:600px){.fx-carry-heading{align-items:flex-start;flex-direction:column}.fx-carry-chart{height:340px}.fx-carry-grid .panel-heading{flex-wrap:wrap}.fx-carry-grid{gap:16px}}

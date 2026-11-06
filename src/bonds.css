@@ -1,0 +1,24 @@
+.bonds-source{display:flex;align-items:center;flex-wrap:wrap;gap:10px 18px;margin:6px 0 10px;font-size:10px;color:#7d8e9b}
+.bonds-frequency{font-size:10px;color:#81909d;margin-bottom:20px}
+.bonds-coverage{font-size:11px;line-height:1.6;color:#728590;margin:-8px 0 20px}.bonds-quotes .metric:disabled{cursor:default;opacity:.6}
+.bonds-warning{background:#fcf7ee;color:#987442;border:1px solid #ecdfc7;border-radius:7px;padding:12px 16px;margin-bottom:18px;font-size:11px}
+.bonds-quotes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:15px;margin-bottom:22px}
+.bonds-quotes .metric{min-width:0;text-align:left}.bonds-quotes .metric-value{font-size:27px}
+.bonds-quotes .metric-foot{display:flex;flex-direction:column;align-items:flex-start;gap:5px;line-height:1.5}
+.bonds-range{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap;color:#7c8c9a;font-size:11px}
+.bonds-top-charts{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:20px}
+.bonds-history{height:265px;font-size:9px;min-width:0}
+.bonds-chart-empty{height:100%;display:grid;place-items:center;text-align:center;padding:25px;font-size:11px;color:#8b98a5}
+.bonds-analytics{margin-top:14px}.bonds-analytics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.bonds-analytics-toggle{display:flex;align-items:center;justify-content:space-between;gap:16px;list-style:none;cursor:pointer;padding:16px 20px;background:#fff;border:1px solid #e4e9ef;border-radius:8px;color:#2c4555}
+.bonds-analytics-toggle::-webkit-details-marker{display:none}.bonds-analytics-toggle::marker{content:''}
+.bonds-analytics-toggle:hover{background:#f8faf9}.bonds-analytics-toggle:focus-visible{outline:2px solid #388675;outline-offset:3px}
+.bonds-analytics-title{display:block;font-family:var(--heading);font-size:15px;font-weight:700}.bonds-analytics-description{display:block;margin-top:5px;font-size:10px;color:#81909d}
+.bonds-analytics-toggle>svg{flex-shrink:0;transition:transform .15s ease}.bonds-analytics[open]>.bonds-analytics-toggle{margin-bottom:18px}.bonds-analytics[open]>.bonds-analytics-toggle>svg{transform:rotate(180deg)}
+.bonds-analytics-grid .panel{min-width:0;margin-bottom:0}.bonds-analytics{margin-bottom:24px}
+.bonds-analytics-grid .bonds-history{height:225px}.bonds-measure{display:flex;align-items:baseline;flex-wrap:wrap;gap:10px;padding:0 21px 6px}
+.bonds-measure strong{font-size:24px;letter-spacing:-.5px;font-family:var(--heading);color:#2c4555}
+.bonds-measure span{font-size:9px;color:#8797a2}
+.bonds-top-charts .chart-footer a{display:inline-flex;align-items:center;gap:4px}
+@media(max-width:1100px){.bonds-quotes{grid-template-columns:repeat(3,minmax(0,1fr))}.bonds-top-charts{grid-template-columns:1fr}}
+@media(max-width:750px){.bonds-analytics-grid{grid-template-columns:1fr}.bonds-quotes{grid-template-columns:repeat(2,minmax(0,1fr))}.bonds-quotes .metric-value{font-size:24px}.bonds-history{height:235px}.bonds-source{gap:8px 12px}.bonds-analytics-grid .panel-heading{gap:10px;flex-wrap:wrap}}
