@@ -97,13 +97,13 @@ export default function CommodityOptions() {
       if (document.visibilityState === 'visible') void update();
     };
     const interval = window.setInterval(refreshWhenVisible, refreshMs);
-    window.addEventListener('meridian:refresh-commodities', refresh);
+    window.addEventListener('jr-trading-workbench:refresh-commodities', refresh);
     document.addEventListener('visibilitychange', refreshWhenVisible);
     void update();
     return () => {
       controller.abort();
       window.clearInterval(interval);
-      window.removeEventListener('meridian:refresh-commodities', refresh);
+      window.removeEventListener('jr-trading-workbench:refresh-commodities', refresh);
       document.removeEventListener('visibilitychange', refreshWhenVisible);
     };
   }, [market, rate, refreshMs]);
@@ -158,7 +158,7 @@ export default function CommodityOptions() {
           onChange={event => setRateInput(event.target.value)} /></label>
         <button className="button secondary" type="submit" disabled={rateInput === '' || !Number.isFinite(rateValue) || rateValue === rate}>Apply</button>
       </form>
-      <button className="button secondary oil-refresh" disabled={loading} onClick={() => window.dispatchEvent(new Event('meridian:refresh-commodities'))}>
+      <button className="button secondary oil-refresh" disabled={loading} onClick={() => window.dispatchEvent(new Event('jr-trading-workbench:refresh-commodities'))}>
         <RefreshCw size={15} className={loading ? 'spin' : undefined}/>{loading ? 'Checking feed' : 'Refresh'}
       </button>
     </div>

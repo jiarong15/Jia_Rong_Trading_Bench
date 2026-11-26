@@ -36,7 +36,7 @@ def source_url(ids):
 
 
 def fetch_macro_text(url):
-    request = Request(url, headers={'User-Agent': 'Mozilla/5.0 (compatible; MeridianLocalDashboard/1.0)', 'Accept': 'text/csv,text/html;q=0.9,*/*;q=0.5', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache'})
+    request = Request(url, headers={'User-Agent': 'Mozilla/5.0 (compatible; JRTradingWorkbench/1.0)', 'Accept': 'text/csv,text/html;q=0.9,*/*;q=0.5', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache'})
     with urlopen(request, timeout=20) as response:
         body = response.read(5_000_001)
     if len(body) > 5_000_000:

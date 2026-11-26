@@ -54,7 +54,7 @@ GROUP_FIELDS = {**{name: tuple(config[4]) for name, config in TABLES.items()}, '
 
 
 def fetch_singapore_text(url):
-    headers = {'User-Agent': 'Mozilla/5.0 (compatible; MeridianLocalDashboard/1.0)',
+    headers = {'User-Agent': 'Mozilla/5.0 (compatible; JRTradingWorkbench/1.0)',
                'Accept': 'application/json,text/csv,*/*', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache'}
     with urlopen(Request(url, headers=headers), timeout=25) as response:
         body = response.read(5_000_001)

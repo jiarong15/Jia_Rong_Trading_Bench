@@ -5,7 +5,7 @@ const report={status:'loaded',message:'SEC 10-K retrieved.',company:'AppLovin Co
  filing:{form:'10-K',accession:'0001751008-26-000010',filed_at:'2026-02-19',period_end:'2025-12-31',url:'https://www.sec.gov/Archives/test.htm'},
  document:doc,download_available:true,warnings:['Issuance evidence requires review.'],provenance:{'current.net_income':{value:3333.751,tag:'us-gaap:NetIncomeLoss',end:'2025-12-31',accession:'0001751008-26-000010',url:'https://www.sec.gov/Archives/test.htm'}}};
 async function mockMarket(page:Page){
- await page.addInitScript(()=>localStorage.setItem('meridian-equity-symbols',JSON.stringify(['APP'])));
+ await page.addInitScript(()=>localStorage.setItem('jr-trading-workbench-equity-symbols',JSON.stringify(['APP'])));
  await page.route('**/api/equities/financials/*',route=>route.fulfill({json:{document:null,origin:null}}));
  await page.route('**/api/equities/market?*',route=>route.fulfill({json:{feed:'iex',coverage:'IEX only',fetched_at:'2026-10-24T20:00:00Z',
   clock:{is_open:false,next_open:'2026-10-26T13:30:00Z'},history:{},papers:[],rows:[{symbol:'APP',name:'AppLovin',kind:'Stock',price:196.74,

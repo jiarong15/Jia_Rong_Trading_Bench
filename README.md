@@ -1,4 +1,4 @@
-# Meridian Investment Workbench
+# JR Trading Workbench
 
 React + TypeScript dashboards backed by a Python/FastAPI investment pipeline. The application runs locally with persistent SQLite state. The Equities page uses Alpaca prices and SEC annual reports; the FX page uses Yahoo Finance via yfinance with Twelve Data fallback. The Bonds page uses official FRED Treasury daily yields. Rates, Commodities and the simulated portfolio use an explicit synthetic provider. The demo workspace works without API keys.
 
@@ -22,7 +22,7 @@ cd investment-workbench
 python launch.py
 ```
 
-Open **http://127.0.0.1:8000**. The launcher starts a hidden local server and opens the browser. It reuses an already running Meridian instance. On a fresh checkout, run `python bootstrap.py` first; this installs workspace-local dependencies and builds the frontend. Python 3.12+ is required for the full pinned Yahoo runtime (this workspace uses Python 3.13). Setup can download a checksum-verified portable Node.js runtime without changing the machine-wide installation. Python launchers work without changing the workstation's PowerShell execution policy; optional PowerShell launchers are also included for environments where scripts are permitted.
+Open **http://127.0.0.1:8000**. The launcher starts a hidden local server and opens the browser. It reuses an already running JR Trading Workbench instance. On a fresh checkout, run `python bootstrap.py` first; this installs workspace-local dependencies and builds the frontend. Python 3.12+ is required for the full pinned Yahoo runtime (this workspace uses Python 3.13). Setup can download a checksum-verified portable Node.js runtime without changing the machine-wide installation. Python launchers work without changing the workstation's PowerShell execution policy; optional PowerShell launchers are also included for environments where scripts are permitted.
 
 ## Economic release calendar
 
@@ -205,7 +205,7 @@ The [CFR article](https://www.cfr.org/articles/chinas-customs-bop-gap-is-not-a-c
 
 Selecting a company in the equities screener automatically requests `POST /api/equities/sec/{symbol}/sync`. The backend resolves an exact SEC ticker/CIK mapping, retrieves the submissions history and company-facts JSON, selects the latest original Form 10-K by fiscal period, downloads the full filing, and imports matching standard US-GAAP annual facts. The workbench shows the fiscal period, filing date, CIK, accession, original SEC link, full report download, warnings, and per-field tag/formula/source provenance. A manual reload refreshes the report; normal selections use a one-hour report cache and the ticker mapping is cached for a day.
 
-The APIs are public and do not require an SEC API key. Requests identify this application, are serialized at no more than four per second, and never send Alpaca credentials. Set backend `SEC_USER_AGENT` to your application name and real administrator contact for your deployment, following SEC fair-access guidance; the default identifies Meridian's single-user research client without inventing a contact address. Set `SEC_ENABLED=false` to disable external SEC access. Isolated test instances disable real requests by default.
+The APIs are public and do not require an SEC API key. Requests identify this application, are serialized at no more than four per second, and never send Alpaca credentials. Set backend `SEC_USER_AGENT` to your application name and real administrator contact for your deployment, following SEC fair-access guidance; the default identifies JR Trading Workbench's single-user research client without inventing a contact address. Set `SEC_ENABLED=false` to disable external SEC access. Isolated test instances disable real requests by default.
 
 Annual facts are matched on accession, end date, USD/share units and 330-380-day duration; fiscal-year labels alone are insufficient because comparative figures share the latest filing's FY label. Latest-report comparatives take precedence; older original 10-Ks can provide opening balances. Ambiguous values and missing tags remain blank. Gross profit can be derived from reported revenue minus cost of revenue. Total debt is derived only when the current and noncurrent debt components, or total long-term debt plus explicit short-term borrowings, are both available. Invested capital uses book equity plus debt minus cash only when every component is available and the result is positive. Absent short-term debt and issuance tags are never assumed zero. Zero cash issuance cannot establish absence of non-cash issuance, so the no-issuance F-Score test often requires manual review.
 

@@ -45,7 +45,7 @@ FIELDS = {'Dissemination Identifier', 'Original Dissemination Identifier', 'Acti
 def public_bytes(url):
     """Bounded public GETs, verified TLS, no credentials and no redirects."""
     opener = build_opener(NoRedirect(), HTTPSHandler(context=tls_context()))
-    request = Request(url, headers={'User-Agent': 'MeridianLocalDashboard/1.0', 'Cache-Control': 'no-cache'})
+    request = Request(url, headers={'User-Agent': 'JRTradingWorkbench/1.0', 'Cache-Control': 'no-cache'})
     deadline = monotonic() + 30
     body = bytearray()
     with opener.open(request, timeout=12) as response:

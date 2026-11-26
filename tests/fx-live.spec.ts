@@ -2,7 +2,7 @@ import {expect,test,type Page} from '@playwright/test';
 
 const quota={plan:'basic',minute_limit:8,minute_remaining:3,minute_used:5,daily_limit:800,daily_used_observed:10,daily_remaining_observed:790,retry_after_seconds:0,note:'Observed account usage.'};
 async function mockFx(page:Page,partial=false){
- await page.addInitScript(()=>localStorage.setItem('meridian-fx-pairs',JSON.stringify(['EUR/USD'])));
+ await page.addInitScript(()=>localStorage.setItem('jr-trading-workbench-fx-pairs',JSON.stringify(['EUR/USD'])));
  await page.route('**/api/fx/market?*',route=>{
   const pairs=new URL(route.request().url()).searchParams.get('pairs')!.split(',');
   return route.fulfill({json:{source:'Twelve Data',checked_at:'2026-10-24T17:00:00Z',quota,coverage:'Indicative reference rates',portfolio_note:'Independent demo portfolio',

@@ -151,7 +151,7 @@ class SECService:
         if self.transport:return self.transport(url,html)
         # Identify the application honestly; operators can provide their own
         # contact in SEC_USER_AGENT without sharing any Alpaca credentials.
-        user_agent=os.environ.get('SEC_USER_AGENT','MeridianInvestmentWorkbench/0.1 (single-user investment research)')
+        user_agent=os.environ.get('SEC_USER_AGENT','JRTradingWorkbench/0.1 (single-user investment research)')
         with self.lock:
             delay=.25-(time.monotonic()-self.last_request)
             if delay>0:time.sleep(delay)

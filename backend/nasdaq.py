@@ -45,7 +45,7 @@ class NasdaqService:
         try:key=nasdaq_key()
         except ValueError:raise NasdaqError('Nasdaq Data Link credentials are not configured on the backend.','not_configured') from None
         url=BASE+table+'.json?'+urllib.parse.urlencode({**params,'api_key':key})
-        req=urllib.request.Request(url,headers={'User-Agent':'MeridianInvestmentWorkbench/0.1','Accept':'application/json'})
+        req=urllib.request.Request(url,headers={'User-Agent':'JRTradingWorkbench/0.1','Accept':'application/json'})
         try:
             with urllib.request.urlopen(req,timeout=20) as response:raw=response.read(5*1024*1024+1)
             if len(raw)>5*1024*1024:raise NasdaqError('Nasdaq response exceeded the 5 MB limit.')

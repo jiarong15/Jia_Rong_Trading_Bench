@@ -47,7 +47,7 @@ def show_bop_status(url):
     except (OSError,ValueError,KeyError,TypeError):print('BOP startup status unavailable. Restart the server, then run python scripts/check-bop.py.')
 
 def main():
-    args=argparse.ArgumentParser(description='Start Meridian locally')
+    args=argparse.ArgumentParser(description='Start JR Trading Workbench locally')
     args.add_argument('--port',type=int,default=8000)
     args.add_argument('--no-browser',action='store_true')
     args.add_argument('--restart',action='store_true',help='Restart this project\'s verified server to load new code and local credentials')
@@ -84,7 +84,7 @@ def main():
             if server.poll() is not None: raise SystemExit(f'Server exited. Inspect {runtime / "server.log"}')
             time.sleep(.5)
         else: raise SystemExit(f'Startup timed out. Inspect {runtime / "server.log"}')
-    print(f'Meridian is running at {url}')
+    print(f'JR Trading Workbench is running at {url}')
     show_fx_status(url)
     show_bop_status(url)
     if not options.no_browser: webbrowser.open(url)

@@ -40,6 +40,6 @@ def main():
     subprocess.run([sys.executable,'-m','pip','install','--target',str(runtime/'yfinance'),'-r',str(project/'backend'/'requirements-yahoo.lock.txt'),'--upgrade'],cwd=project,check=True)
     subprocess.run([sys.executable,'-I',str(project/'scripts'/'check-bop.py'),'--offline'],cwd=project,check=True)
     subprocess.run(npm+['run','build'],cwd=project,env=env,check=True)
-    print('Ready. Run python launch.py to open Meridian.')
+    print('Ready. Run python launch.py to open JR Trading Workbench.')
 
 if __name__=='__main__': main()

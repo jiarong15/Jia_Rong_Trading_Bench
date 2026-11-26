@@ -80,7 +80,7 @@ def configured_feed():
             path=Path(certificate).expanduser()
             if not path.is_absolute():path=Path(__file__).resolve().parents[1]/path
             context.load_verify_locations(cafile=path)
-        headers={'Accept':'application/json','Cache-Control':'no-cache','User-Agent':'MeridianLocalDashboard/1.0'}
+        headers={'Accept':'application/json','Cache-Control':'no-cache','User-Agent':'JRTradingWorkbench/1.0'}
         if token:headers['Authorization']='Bearer '+token
         opener=build_opener(NoRedirect(),HTTPSHandler(context=context))
         with opener.open(Request(url,headers=headers),timeout=18) as response:body=response.read(1_000_001)

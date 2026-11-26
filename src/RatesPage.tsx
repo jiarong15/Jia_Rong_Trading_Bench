@@ -96,8 +96,8 @@ export default function RatesPage(){
  useEffect(()=>{
   void load();
   const stop=watchBondRefresh(()=>void load(),()=>!request.current,()=>lastAttempt.current,()=>failed.current,()=>60_000);
-  const manual=()=>void load(true);window.addEventListener('meridian:refresh-rates',manual);
-  return()=>{stop();window.removeEventListener('meridian:refresh-rates',manual);const pending=request.current;request.current=null;pending?.abort();};
+  const manual=()=>void load(true);window.addEventListener('jr-trading-workbench:refresh-rates',manual);
+  return()=>{stop();window.removeEventListener('jr-trading-workbench:refresh-rates',manual);const pending=request.current;request.current=null;pending?.abort();};
  },[load]);
  const series=market?.charts.flatMap(chart=>chart.series)??[];
  const ready=series.filter(value=>value.last_value!==null).length;

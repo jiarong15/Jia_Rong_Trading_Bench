@@ -28,7 +28,7 @@ FIXINGS = ('10:00', '11:00', '14:00', '15:00', '16:00')
 def public_json(url):
     if url not in URLS.values():
         raise ValueError('Unexpected CFETS endpoint.')
-    request = Request(url, data=b'', headers={'User-Agent':'MeridianLocalDashboard/1.0',
+    request = Request(url, data=b'', headers={'User-Agent':'JRTradingWorkbench/1.0',
         'Accept':'application/json', 'Cache-Control':'no-cache', 'Referer':SOURCE_URL})
     opener = build_opener(NoRedirect(), HTTPSHandler(context=tls_context()))
     deadline = monotonic()+20

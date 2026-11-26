@@ -43,7 +43,7 @@ def fetch_switzerland(url):
     parts = urlsplit(url)
     if parts.scheme != 'https' or parts.netloc not in ('data.snb.ch', 'scheduler.swissdatas.ch', 'stats.bis.org'):
         raise BOPError('Swiss source URL left the official-source allowlist.')
-    headers = {'User-Agent': 'Mozilla/5.0 (compatible; MeridianLocalDashboard/1.0)', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache',
+    headers = {'User-Agent': 'Mozilla/5.0 (compatible; JRTradingWorkbench/1.0)', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache',
                'Accept': 'text/csv' if url == CURRENCY else 'application/json,text/csv,*/*'}
     try:
         with urlopen(Request(url, headers=headers), timeout=30) as response: body = response.read(8_000_001)

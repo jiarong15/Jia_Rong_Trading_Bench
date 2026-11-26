@@ -43,7 +43,7 @@ def fetch_canada(url):
     parts = urlsplit(url)
     allowed = {download_url(pid) for pid in SPEC} | {CURRENCY}
     if parts.scheme != 'https' or url not in allowed: raise BOPError('Canadian source URL left the official-source allowlist.')
-    headers = {'User-Agent': 'Mozilla/5.0 (compatible; MeridianLocalDashboard/1.0)', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache'}
+    headers = {'User-Agent': 'Mozilla/5.0 (compatible; JRTradingWorkbench/1.0)', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache'}
     with urlopen(Request(url, headers=headers), timeout=30) as response: body = response.read(8_000_001)
     if len(body) > 8_000_000: raise BOPError('Canadian source exceeded the download limit.')
     return body

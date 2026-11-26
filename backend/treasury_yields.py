@@ -48,7 +48,7 @@ def fetch_text(url):
         path = Path(configured).expanduser()
         if not path.is_absolute(): path = Path(__file__).resolve().parents[1]/path
         context.load_verify_locations(cafile=path)
-    request = Request(url, headers={'User-Agent': 'Mozilla/5.0 (compatible; MeridianLocalDashboard/1.0)',
+    request = Request(url, headers={'User-Agent': 'Mozilla/5.0 (compatible; JRTradingWorkbench/1.0)',
                                    'Accept': 'application/json,text/csv;q=0.9', 'Cache-Control': 'no-cache'})
     with urlopen(request, timeout=12, context=context) as response:
         body = response.read(3_000_001)

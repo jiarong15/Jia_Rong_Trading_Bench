@@ -2,6 +2,7 @@ import {useCallback,useEffect,useRef,useState} from 'react';
 import {Area,AreaChart,CartesianGrid,ResponsiveContainer,Tooltip,XAxis,YAxis} from 'recharts';
 import {Download,RefreshCw,Search,X} from 'lucide-react';
 import {api,download} from './api';
+import {readWorkspacePreference,writeWorkspacePreference} from './workspaceStorage';
 import {Badge,Change,Metric,PageTitle,Panel,number,signed,stamp} from './components';
 import type {PageProps} from './pages';
 import BopSection from './BopSection';
@@ -23,8 +24,8 @@ const decimals=(pair:string)=>pair.endsWith('/JPY')?3:5;
 const fmt=(v:number|null|undefined,digits=2,suffix='')=>v==null?'Unavailable':number(v,digits)+suffix;
 
 export default function FxPage({notify}:PageProps){
- const [pairs,setPairs]=useState<string[]>(()=>{try{const saved=JSON.parse(localStorage.getItem('meridian-fx-pairs')||'null');if(!Array.isArray(saved)||!saved.length||saved.length>12||!saved.every(p=>typeof p==='string'&&/^[A-Z]{3}\/[A-Z]{3}$/.test(p)))return DEFAULTS;return localStorage.getItem('meridian-fx-defaults-version')===DEFAULTS_VERSION?saved:[...new Set([...DEFAULTS,...saved])].slice(0,12);}catch{return DEFAULTS;}});
- useEffect(()=>{try{localStorage.setItem('meridian-fx-pairs',JSON.stringify(pairs));localStorage.setItem('meridian-fx-defaults-version',DEFAULTS_VERSION);}catch{/* The live comparison still works when browser storage is unavailable. */}},[pairs]);
+ const [pairs,setPairs]=useState<string[]>(()=>{try{const saved=JSON.parse(readWorkspacePreference('fx-pairs')||'null');if(!Array.isArray(saved)||!saved.length||saved.length>12||!saved.every(p=>typeof p==='string'&&/^[A-Z]{3}\/[A-Z]{3}$/.test(p)))return DEFAULTS;return readWorkspacePreference('fx-defaults-version')===DEFAULTS_VERSION?saved:[...new Set([...DEFAULTS,...saved])].slice(0,12);}catch{return DEFAULTS;}});
+ useEffect(()=>{try{writeWorkspacePreference('fx-pairs',JSON.stringify(pairs));writeWorkspacePreference('fx-defaults-version',DEFAULTS_VERSION);}catch{/* The live comparison still works when browser storage is unavailable. */}},[pairs]);
  const [selected,setSelected]=useState(pairs[0]);const [market,setMarket]=useState<Market|null>(null);
  const [busy,setBusy]=useState(false);const [error,setError]=useState('');const sequence=useRef(0);
  const [clock,setClock]=useState(Date.now());
@@ -36,7 +37,7 @@ export default function FxPage({notify}:PageProps){
  const [query,setQuery]=useState('');const [searchOpen,setSearchOpen]=useState(false);const [results,setResults]=useState<Results|null>(null);const [searchBusy,setSearchBusy]=useState(false);const [searchError,setSearchError]=useState('');const [offset,setOffset]=useState(0);const searchRef=useRef<HTMLDivElement>(null);
  const load=useCallback(async()=>{const id=++sequence.current;setBusy(true);try{const result=await api<Market>(`/fx/market?pairs=${encodeURIComponent(pairs.join(','))}`);if(id!==sequence.current)return;setMarket(result);setError('');}catch(e){if(id===sequence.current)setError(e instanceof Error?e.message:'FX connection failed');}finally{if(id===sequence.current)setBusy(false);}},[pairs]);
  useEffect(()=>{void load();return()=>{sequence.current++;};},[load]);
- useEffect(()=>{function reload(){void load();setRefresh(v=>v+1);}window.addEventListener('meridian:refresh-fx',reload);const timer=setInterval(()=>{if(!document.hidden)reload();},300000);return()=>{clearInterval(timer);window.removeEventListener('meridian:refresh-fx',reload);};},[load]);
+ useEffect(()=>{function reload(){void load();setRefresh(v=>v+1);}window.addEventListener('jr-trading-workbench:refresh-fx',reload);const timer=setInterval(()=>{if(!document.hidden)reload();},300000);return()=>{clearInterval(timer);window.removeEventListener('jr-trading-workbench:refresh-fx',reload);};},[load]);
  useEffect(()=>{
   let current=true;const controller=new AbortController();setDaily(null);setDailyBusy(true);setHistoryError('');
   api<History>(`/fx/history?pair=${encodeURIComponent(selected)}&interval=1day`,{signal:controller.signal}).then(r=>{if(current){setDaily(r);setMarket(m=>m&&r.providers?{...m,providers:r.providers}:m);}}).catch(e=>{if(current)setHistoryError(e.message);}).finally(()=>{if(current)setDailyBusy(false);});
@@ -55,9 +56,9 @@ export default function FxPage({notify}:PageProps){
   const timer=setTimeout(()=>{api<Results>(`/fx/search?q=${encodeURIComponent(query)}&offset=${offset}`,{signal:controller.signal}).then(r=>{if(current)setResults(r);}).catch(e=>{if(current)setSearchError(e.message);}).finally(()=>{if(current)setSearchBusy(false);});},250);
   return()=>{current=false;clearTimeout(timer);controller.abort();};
  },[query,offset,searchOpen]);
- function selectPair(pair:Pair){if(!pairs.includes(pair.symbol)){const next=pairs.length<12?[...pairs,pair.symbol]:pairs.map(p=>p===selected?pair.symbol:p);setPairs(next);localStorage.setItem('meridian-fx-pairs',JSON.stringify(next));if(pairs.length>=12)notify(`${pair.symbol} replaces ${selected} in the comparison.`);}setSelected(pair.symbol);setQuery('');setOffset(0);setSearchOpen(false);}
- function removePair(pair:string){if(pairs.length<=1)return;const next=pairs.filter(p=>p!==pair);setPairs(next);localStorage.setItem('meridian-fx-pairs',JSON.stringify(next));if(pair===selected)setSelected(next[0]);}
- function reload(){void load();setRefresh(v=>v+1);window.dispatchEvent(new Event('meridian:refresh-bop'));}
+ function selectPair(pair:Pair){if(!pairs.includes(pair.symbol)){const next=pairs.length<12?[...pairs,pair.symbol]:pairs.map(p=>p===selected?pair.symbol:p);setPairs(next);writeWorkspacePreference('fx-pairs',JSON.stringify(next));if(pairs.length>=12)notify(`${pair.symbol} replaces ${selected} in the comparison.`);}setSelected(pair.symbol);setQuery('');setOffset(0);setSearchOpen(false);}
+ function removePair(pair:string){if(pairs.length<=1)return;const next=pairs.filter(p=>p!==pair);setPairs(next);writeWorkspacePreference('fx-pairs',JSON.stringify(next));if(pair===selected)setSelected(next[0]);}
+ function reload(){void load();setRefresh(v=>v+1);window.dispatchEvent(new Event('jr-trading-workbench:refresh-bop'));}
  const quote=market?.rows.find(r=>r.symbol===selected);const history=interval==='1day'?daily:intraday;const chartBusy=interval==='1day'?dailyBusy:intradayBusy;
  const chartError=interval==='1day'?historyError:intradayError;
  const bars=history?.symbol===selected?history.bars.slice(period==='1M'?-22:period==='3M'?-66:period==='1Y'?-252:0):[];

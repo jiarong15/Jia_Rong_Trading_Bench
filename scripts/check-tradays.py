@@ -18,7 +18,7 @@ def main():
     today = datetime.now(timezone(timedelta(hours=8))).date()
     before, after = today-timedelta(days=1), today+timedelta(days=1)
     params = {'mode': '2', 'date_mode': '0', 'importance': '8', 'from': str(before)+'T00:00:00',
-              'to': str(after)+'T23:59:59', 'dateFormat': 'DMY', 'utm_source': 'meridian-workbench'}
+              'to': str(after)+'T23:59:59', 'dateFormat': 'DMY', 'utm_source': 'jr-trading-workbench'}
     base = 'https://www.tradays.com'
     body = get(base+'/en/economic-calendar/widget?'+urlencode(params))
     match = re.search(r'Calendar.Data\s*=\s*(\[[\s\S]*?\]);', body)

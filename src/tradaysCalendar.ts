@@ -9,7 +9,7 @@ export function tradaysWidgetUrl(today=singaporeDate(),anchor=''){
  const day=(offset:number)=>new Date(noon+offset*86_400_000).toISOString().slice(0,10);
  // Provider-supported settings checked against the live widget. Keep vendor
  // rendering, result polling and attribution intact. Dates use its selected zone.
- const params=new URLSearchParams({mode:'2',date_mode:'0',importance:'8',from:day(-1)+'T00:00:00',to:day(1)+'T23:59:59',dateFormat:'DMY',utm_source:'meridian-workbench'});
+ const params=new URLSearchParams({mode:'2',date_mode:'0',importance:'8',from:day(-1)+'T00:00:00',to:day(1)+'T23:59:59',dateFormat:'DMY',utm_source:'jr-trading-workbench'});
  if(anchor&&!/^prevValue[1-9]\d{0,11}$/.test(anchor))throw new Error('Invalid calendar anchor.');
  return `${TRADAYS_WIDGET}?${params}${anchor?'#'+anchor:''}`;
 }

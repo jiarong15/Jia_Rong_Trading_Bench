@@ -54,8 +54,8 @@ export default function BondsPage(){
  useEffect(()=>{
   void load();
   const stop=watchBondRefresh(()=>void load(),()=>!request.current,()=>lastAttempt.current,()=>failed.current,()=>country==='USA'?bondPollInterval():['CHN','JPN','GBR','CAN','SGP'].includes(country)?60_000:300_000);
-  const manual=()=>void load(true);window.addEventListener('meridian:refresh-bonds',manual);
-  return()=>{stop();window.removeEventListener('meridian:refresh-bonds',manual);const pending=request.current;request.current=null;pending?.abort();};
+  const manual=()=>void load(true);window.addEventListener('jr-trading-workbench:refresh-bonds',manual);
+  return()=>{stop();window.removeEventListener('jr-trading-workbench:refresh-bonds',manual);const pending=request.current;request.current=null;pending?.abort();};
  },[load]);
  const rows=filterBondRows(market?.rows??[],period,market?.latest_observation_date??null);
  const countryInfo=BOND_COUNTRIES.find(item=>item.code===country)!;

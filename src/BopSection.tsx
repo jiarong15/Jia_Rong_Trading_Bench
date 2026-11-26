@@ -87,7 +87,7 @@ export default function BopSection(){
   if(!COUNTRIES.find(item=>item.code===country)?.connected||data?.refresh_available===false)return;
   return watchBopRefresh(()=>void load(true,true),()=>!inFlight.current,()=>lastSourceAttempt.current);
  },[load,country,data?.refresh_available]);
- useEffect(()=>{const refresh=()=>void load(true);window.addEventListener('meridian:refresh-fx',refresh);window.addEventListener('meridian:refresh-bop',refresh);return()=>{window.removeEventListener('meridian:refresh-fx',refresh);window.removeEventListener('meridian:refresh-bop',refresh);};},[load]);
+ useEffect(()=>{const refresh=()=>void load(true);window.addEventListener('jr-trading-workbench:refresh-fx',refresh);window.addEventListener('jr-trading-workbench:refresh-bop',refresh);return()=>{window.removeEventListener('jr-trading-workbench:refresh-fx',refresh);window.removeEventListener('jr-trading-workbench:refresh-bop',refresh);};},[load]);
  const shown=data?.country.code===country&&data.frequency===frequency?data:null;
  const selected=(shown?.countries??COUNTRIES).find(item=>item.code===country)!;
  return <section className="bop-section" id="fx-bop" aria-labelledby="bop-title" aria-busy={busy}>

@@ -43,7 +43,7 @@ GROUP_FIELDS = {**{group: tuple(field for file in files for field in file['field
 
 
 def fetch_australia(url):
-    headers = {'User-Agent': 'Mozilla/5.0 (compatible; MeridianLocalDashboard/1.0)',
+    headers = {'User-Agent': 'Mozilla/5.0 (compatible; JRTradingWorkbench/1.0)',
                'Accept': 'text/html,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,*/*',
                'Cache-Control': 'no-cache', 'Pragma': 'no-cache'}
     if url.startswith('https://stats.bis.org/'):

@@ -64,7 +64,7 @@ def customs_url(year):
 
 
 def fetch_uk_text(url):
-    headers = {'User-Agent': 'Mozilla/5.0 (compatible; MeridianLocalDashboard/1.0)',
+    headers = {'User-Agent': 'Mozilla/5.0 (compatible; JRTradingWorkbench/1.0)',
                'Accept': 'application/json,text/csv,*/*', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache'}
     with urlopen(Request(url, headers=headers), timeout=30) as response:
         body = response.read(20_000_001)

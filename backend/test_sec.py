@@ -130,7 +130,7 @@ def test_mismatched_identity_and_untrusted_document_paths_fail(tmp_path):
 
 def test_sec_http_errors_do_not_expose_upstream_body_or_broker_credentials(tmp_path,monkeypatch):
     def denied(request,timeout):
-        assert request.get_header('User-agent').startswith('Meridian')
+        assert request.get_header('User-agent').startswith('JRTradingWorkbench/')
         assert not any('apca' in name.lower() for name in request.headers)
         raise urllib.error.HTTPError(request.full_url,403,'blocked',{},None)
     monkeypatch.setattr('urllib.request.urlopen',denied)

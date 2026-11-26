@@ -36,7 +36,7 @@ GROUP_NAMES = {'accounts': 'Stats NZ balance of payments, investment flows, rese
                'currency': 'BIS broad nominal New Zealand dollar index, direct feed'}
 GROUP_FIELDS = {**{group: tuple(fields) for group, fields in SPEC.items()},
                 'trade': ('exports', 'imports'), 'currency': ('currency_index',)}
-HEADERS = {'User-Agent': 'Mozilla/5.0 (compatible; MeridianLocalDashboard/1.0)',
+HEADERS = {'User-Agent': 'Mozilla/5.0 (compatible; JRTradingWorkbench/1.0)',
            'Cache-Control': 'no-cache', 'Pragma': 'no-cache'}
 MONTHS = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')
 
@@ -79,7 +79,7 @@ def fetch_infoshare_trade():
     fields += [(prefix + 'tbMissingText', '..'), (prefix + 'TimeVariableSelector$tbSelected', str(len(form.periods))),
                (prefix + 'rblCSVFormat', 'full'), (prefix + 'rblSeriesDescription', 'description_at_top'),
                (prefix + 'cbShowStatusCodes', 'on'), (prefix + 'btnGenerate.x', '10'), (prefix + 'btnGenerate.y', '10')]
-    boundary = '----MeridianNZ' + uuid4().hex
+    boundary = '----JRTradingWorkbenchNZ' + uuid4().hex
     parts = [f'--{boundary}\r\nContent-Disposition: form-data; name="{name}"\r\n\r\n{value}\r\n' for name, value in fields]
     parts.append(f'--{boundary}\r\nContent-Disposition: form-data; name="{prefix}fuSearchFile"; filename="series.sch"\r\nContent-Type: text/plain\r\n\r\nEXPM.SCT99F\r\nIMPM.SCT99C\r\n--{boundary}--\r\n')
     request = Request(EXPORT, data=''.join(parts).encode('utf-8'), headers={**HEADERS, 'Content-Type': 'multipart/form-data; boundary=' + boundary})

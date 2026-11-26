@@ -166,7 +166,7 @@ def fetch_page(url):
         context.load_verify_locations(cafile=path)
         handlers.append(HTTPSHandler(context=context))
     opener = build_opener(*handlers)
-    request = Request(url, headers={'User-Agent': 'MeridianLocalDashboard/1.0', 'Cache-Control': 'no-cache'})
+    request = Request(url, headers={'User-Agent': 'JRTradingWorkbench/1.0', 'Cache-Control': 'no-cache'})
     with opener.open(request, timeout=12) as response:
         body = response.read(2_000_001)
         server_at = parsedate_to_datetime(response.headers['Date'])

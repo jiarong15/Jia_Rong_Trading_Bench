@@ -73,7 +73,7 @@ def fetch_bytes(url, data=None):
     if configured:
         path = Path(configured).expanduser()
         context.load_verify_locations(cafile=path if path.is_absolute() else Path(__file__).resolve().parents[1]/path)
-    headers = {'User-Agent':'Mozilla/5.0 (compatible; MeridianLocalDashboard/1.0)',
+    headers = {'User-Agent':'Mozilla/5.0 (compatible; JRTradingWorkbench/1.0)',
                'Cache-Control':'no-cache', 'Accept':'*/*'}
     if data is not None: headers['Content-Type'] = 'application/x-www-form-urlencoded'
     limit = 50_000_000 if url == UK+'glcnominalddata.zip' else 12_000_000

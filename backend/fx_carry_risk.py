@@ -42,7 +42,7 @@ def fetch(url):
         path = Path(certificate).expanduser()
         if not path.is_absolute(): path = Path(__file__).resolve().parents[1] / path
         context.load_verify_locations(cafile=path)
-    request = Request(url, headers={'User-Agent': 'MeridianLocalDashboard/1.0', 'Cache-Control': 'no-cache'})
+    request = Request(url, headers={'User-Agent': 'JRTradingWorkbench/1.0', 'Cache-Control': 'no-cache'})
     with urlopen(request, timeout=18, context=context) as response:
         body = response.read(4_000_001)
     if len(body) > 4_000_000: raise ValueError('Source response exceeds the size limit.')

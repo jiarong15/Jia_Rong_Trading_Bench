@@ -105,7 +105,7 @@ def create_app(db_path=None):
             if source: source.close()
             if inflation: inflation.close()
             options.close()
-    app=FastAPI(title='Meridian Investment Workbench',version='0.1.0',lifespan=lifespan)
+    app=FastAPI(title='JR Trading Workbench',version='0.1.0',lifespan=lifespan)
     provider=DemoProvider();store=Store(db_path or os.environ.get('WORKBENCH_DB',str(Path(__file__).parent.parent/'data'/'workbench.sqlite3')))
     app.state.store=store;app.state.provider=provider
     equities=AlpacaService(enabled=db_path is None and os.environ.get('ALPACA_ENABLED','true').lower()!='false')
@@ -398,7 +398,7 @@ def create_app(db_path=None):
         state=store.read();events=store.audit()
         return {**state,'portfolio':summarize(state,provider),'instruments':provider.instruments(),'curve':curves(),
           'events':list(reversed(events))[:100],'ledger_verified':True,'snapshot':AS_OF,'mode':'synthetic-paper',
-          'sources':[{'id':'demo-market','name':'Meridian fixture provider','status':'Demo','coverage':ASSET_CLASSES,'observations':len(provider.records)*260,'vintage':'demo-v1','as_of':AS_OF,'quality':'Synthetic','capabilities':['quotes','daily bars','reference terms','illustrative curves']}],
+          'sources':[{'id':'demo-market','name':'JR Trading Workbench fixture provider','status':'Demo','coverage':ASSET_CLASSES,'observations':len(provider.records)*260,'vintage':'demo-v1','as_of':AS_OF,'quality':'Synthetic','capabilities':['quotes','daily bars','reference terms','illustrative curves']}],
           'capabilities':{'llm':'Not connected; deterministic specialists','live_execution':False,'paper_execution':'USD cash bonds and selected equities','storage':'SQLite WAL + hash-linked audit journal'}}
     @app.get('/api/instruments/{key}/history')
     def history(key:str):

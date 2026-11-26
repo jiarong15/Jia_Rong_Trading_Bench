@@ -84,7 +84,7 @@ CHARTS = [
 
 
 def fetch(url, token=None):
-    headers = {'User-Agent':'MeridianLocalDashboard/1.0','Accept':'application/json,text/csv','Cache-Control':'no-cache'}
+    headers = {'User-Agent':'JRTradingWorkbench/1.0','Accept':'application/json,text/csv','Cache-Control':'no-cache'}
     if token: headers['Authorization']='Bearer '+token
     opener = build_opener(NoRedirect(),HTTPSHandler(context=tls_context()))
     with opener.open(Request(url,headers=headers),timeout=18) as response: body=response.read(8_000_001)

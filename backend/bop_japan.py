@@ -62,7 +62,7 @@ def boj_url(group):
 
 
 def fetch_japan_text(url):
-    headers = {'User-Agent': 'Mozilla/5.0 (compatible; MeridianLocalDashboard/1.0)',
+    headers = {'User-Agent': 'Mozilla/5.0 (compatible; JRTradingWorkbench/1.0)',
                'Accept': 'application/json,text/csv,text/html;q=0.9,*/*;q=0.5',
                'Cache-Control': 'no-cache', 'Pragma': 'no-cache'}
     with urlopen(Request(url, headers=headers), timeout=25) as response:

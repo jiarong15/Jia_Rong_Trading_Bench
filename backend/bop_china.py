@@ -63,7 +63,7 @@ def fetch_china_bytes(url, payload=None):
     if parts.scheme != 'https' or parts.netloc not in allowed:
         raise BOPError('China source URL is outside the official-source allowlist.')
     data = json.dumps(payload).encode('utf-8') if payload is not None else None
-    headers = {'User-Agent': 'Mozilla/5.0 (compatible; MeridianLocalDashboard/1.0)',
+    headers = {'User-Agent': 'Mozilla/5.0 (compatible; JRTradingWorkbench/1.0)',
                'Accept': 'application/json,text/csv,text/html,*/*', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache'}
     if data is not None:
         headers.update({'Content-Type': 'application/json', 'Referer': 'https://data.stats.gov.cn/dg/website/page.html'})

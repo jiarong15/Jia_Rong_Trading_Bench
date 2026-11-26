@@ -47,7 +47,7 @@ def fetch_preview(before=None):
         except (OSError, ValueError) as exc:
             raise NewsError('The configured Telegram CA certificate could not be loaded. Check TELEGRAM_NEWS_CA_FILE on this computer.', 'configuration_error') from exc
     url = PREVIEW_URL if before is None else PREVIEW_URL + '?before=' + str(before)
-    request = Request(url, headers={'User-Agent': 'Mozilla/5.0 (compatible; MeridianLocalDashboard/1.0)',
+    request = Request(url, headers={'User-Agent': 'Mozilla/5.0 (compatible; JRTradingWorkbench/1.0)',
                       'Accept': 'text/html', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache'})
     with urlopen(request, timeout=8, context=context) as response:
         if 'text/html' not in response.headers.get('Content-Type', ''): raise NewsError('Telegram did not return a channel preview.')

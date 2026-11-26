@@ -64,8 +64,8 @@ export default function FxOptionsHeatmap({refresh=0}:{refresh?:number}){
  useEffect(()=>{
   setData(null);setError('');void load();
   const stop=watchBondRefresh(()=>void load(),()=>!request.current,()=>lastAttempt.current,()=>failed.current,()=>60_000);
-  const manual=()=>void load(true);window.addEventListener('meridian:refresh-fx',manual);
-  return()=>{stop();window.removeEventListener('meridian:refresh-fx',manual);sequence.current++;const previous=request.current;request.current=null;previous?.abort();};
+  const manual=()=>void load(true);window.addEventListener('jr-trading-workbench:refresh-fx',manual);
+  return()=>{stop();window.removeEventListener('jr-trading-workbench:refresh-fx',manual);sequence.current++;const previous=request.current;request.current=null;previous?.abort();};
  },[load,refresh]);
  return <section id="fx-options" className="fx-options-section" aria-label="FX options expiration heatmap">
   <div className="fx-options-heading"><div><span className="eyebrow">FX OPTIONS</span><h2>Expiration heatmap<span>.</span></h2><p>Explore option concentration across moneyness and expiry.</p></div><Badge tone={data?.status==='ready'?'green':'neutral'}>{data?.basis==='open_interest'?'Open interest':data?.basis==='reported_trades'?'Reported trades':'Checking source'}</Badge></div>

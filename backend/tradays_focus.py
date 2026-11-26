@@ -15,7 +15,7 @@ def fetch_widget(today):
     params = {'mode': '2', 'date_mode': '0', 'importance': '8',
               'from': str(today-timedelta(days=1))+'T00:00:00',
               'to': str(today+timedelta(days=1))+'T23:59:59',
-              'dateFormat': 'DMY', 'utm_source': 'meridian-workbench'}
+              'dateFormat': 'DMY', 'utm_source': 'jr-trading-workbench'}
     request = Request(WIDGET+'?'+urlencode(params), headers={'User-Agent': 'Mozilla/5.0', 'Accept': 'text/html'})
     with urlopen(request, timeout=8) as response:
         body = response.read(2_000_001)

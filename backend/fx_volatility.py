@@ -34,7 +34,7 @@ def tls_context():
 
 def public_report():
     opener = build_opener(NoRedirect(), HTTPSHandler(context=tls_context()))
-    request = Request(SAXO_URL, headers={'User-Agent': 'MeridianLocalDashboard/1.0', 'Cache-Control': 'no-cache'})
+    request = Request(SAXO_URL, headers={'User-Agent': 'JRTradingWorkbench/1.0', 'Cache-Control': 'no-cache'})
     with opener.open(request, timeout=18) as response: body = response.read(1_000_001)
     if len(body) > 1_000_000: raise ValueError('Saxo report exceeds size limit.')
     return body.decode('utf-8-sig')
