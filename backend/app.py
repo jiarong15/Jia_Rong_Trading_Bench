@@ -14,6 +14,7 @@ from .store import Store, now
 from .risk import portfolio_risk
 from .rebalance import preview as rebalance_preview, recommendation, validate_targets, fingerprint, settle
 from .alpaca import AlpacaService, DEFAULT_SYMBOLS, symbols_from
+from .commodity_options import CommodityOptionsService
 from .equity_analysis import score_financials, validate_financials, valuation, implementation, PAPERS
 from .sec import SECService, SECError, effective_document
 from .nasdaq import NasdaqService
@@ -23,6 +24,7 @@ from .fx_sources import FXSources
 from .fx_carry_risk import FXCarryRiskService
 from .us_rates import USRatesService
 from .fx_options import FXOptionsService
+from .cfets_fx import CFETSFXSource
 from .config import load_backend_env, project_id
 from .credentials import twelvedata_status
 from .bop_portability import inspect_views
@@ -108,6 +110,7 @@ def create_app(db_path=None):
     app.state.store=store;app.state.provider=provider
     equities=AlpacaService(enabled=db_path is None and os.environ.get('ALPACA_ENABLED','true').lower()!='false')
     app.state.equities=equities
+    app.state.commodity_options=CommodityOptionsService(equities,enabled=db_path is None)
     sec=SECService(Path(store.path).parent/'sec-cache',enabled=db_path is None and os.environ.get('SEC_ENABLED','true').lower()!='false')
     app.state.sec=sec
     nasdaq=NasdaqService(enabled=db_path is None and os.environ.get('NASDAQ_DATA_LINK_ENABLED','true').lower()!='false')
@@ -121,7 +124,9 @@ def create_app(db_path=None):
     fx_carry_risk=FXCarryRiskService(Path(store.path).parent/'fx-carry-risk.json',enabled=db_path is None)
     app.state.fx_carry_risk=fx_carry_risk
     fx_options=FXOptionsService(Path(store.path).parent/'fx-option-trades.json',fx_carry_risk,
-                               enabled=db_path is None and os.environ.get('FX_OPTIONS_ENABLED','true').lower()=='true')
+                               enabled=db_path is None and os.environ.get('FX_OPTIONS_ENABLED','true').lower()=='true',
+                               cfets_source=CFETSFXSource(Path(store.path).parent/'cfets-usdcny.json',
+                                   enabled=db_path is None and os.environ.get('FX_CFETS_ENABLED','true').lower()=='true'))
     app.state.fx_options=fx_options
     us_rates=USRatesService(Path(store.path).parent/'us-rates.json',enabled=db_path is None and os.environ.get('RATES_ENABLED','true').lower()=='true')
     app.state.us_rates=us_rates
@@ -172,6 +177,12 @@ def create_app(db_path=None):
         response=await call_next(request);response.headers['X-Content-Type-Options']='nosniff';return response
     @app.get('/api/health')
     def health(): return {'status':'ok','mode':'synthetic-paper','snapshot':AS_OF,'process_id':os.getpid(),'project_id':project_id()}
+    @app.get('/api/commodities/options/calibration')
+    def commodity_calibration(response:Response,
+                              market:Literal['wti','wti-european','uso','brent','xau','natgas']='wti',
+                              rate_pct:float=Query(default=0,ge=-5,le=25),refresh:bool=False):
+        response.headers['Cache-Control']='no-store'
+        return app.state.commodity_options.view(market,rate_pct,refresh)
     @app.get('/api/fx/status')
     def fx_status(response:Response):
         response.headers['Cache-Control']='no-store'

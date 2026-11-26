@@ -5,7 +5,7 @@ import io
 import json
 from urllib.request import Request,urlopen
 
-FORMULAS={'2s10s':{'y10':1,'y2':-1},'3m10s':{'y10':1,'m3':-1},'5s30s':{'y30':1,'y5':-1},
+FORMULAS={'2s5s':{'y5':1,'y2':-1},'2s10s':{'y10':1,'y2':-1},'3m10s':{'y10':1,'m3':-1},'5s30s':{'y30':1,'y5':-1},
           '5s10s':{'y10':1,'y5':-1},'10s30s':{'y30':1,'y10':-1},
           '2s5s10s':{'y5':2,'y2':-1,'y10':-1},'2s10s30s':{'y10':2,'y2':-1,'y30':-1}}
 IDS={'m3':'TB.CDN.90D.MID','y2':'BD.CDN.2YR.DQ.YLD','y5':'BD.CDN.5YR.DQ.YLD',
@@ -28,7 +28,7 @@ def main():
     assert market['country']['code']=='CAN' and market['country']['currency']=='CAD'
     assert market['status']=='ready' and not market['error'] and not market['source_warning']
     assert market['source_route']=='Bank of Canada \u00b7 Valet JSON API' and market['poll_interval_seconds']==60
-    assert len(market['curve'])==5 and len(market['metrics'])==7 and len(market['quotes'])==5
+    assert len(market['curve'])==5 and len(market['metrics'])==len(FORMULAS) and len(market['quotes'])==5
     assert all(item['value'] is not None for item in market['quotes']+market['metrics'])
     assert all('bankofcanada.ca' in item['url'] for item in market['sources'])
     bonds=official('bond_yields_benchmark');bills=official('money_market')

@@ -4,7 +4,7 @@ import argparse
 import json
 from urllib.request import urlopen
 
-FORMULAS = {'2s10s': {'y10':1,'y2':-1}, '3m10s': {'y10':1,'m3':-1},
+FORMULAS = {'2s5s': {'y5':1,'y2':-1}, '2s10s': {'y10':1,'y2':-1}, '3m10s': {'y10':1,'m3':-1},
             '5s30s': {'y30':1,'y5':-1}, '5s10s': {'y10':1,'y5':-1}, '10s30s': {'y30':1,'y10':-1},
             '2s5s10s': {'y5':2,'y2':-1,'y10':-1}, '2s10s30s': {'y10':2,'y2':-1,'y30':-1}}
 
@@ -17,7 +17,7 @@ def main():
         result=json.load(response)
     if result['status']!='ready' or result['error']: raise ValueError('No successful live source check.')
     if args.require_api and result['source_route']!='FRED API': raise ValueError('The authenticated API was not used.')
-    if not result['rows'] or len(result['metrics'])!=7 or len(result['quotes'])!=5: raise ValueError('Incomplete source coverage.')
+    if not result['rows'] or len(result['metrics'])!=len(FORMULAS) or len(result['quotes'])!=5: raise ValueError('Incomplete source coverage.')
     count=0
     for row in result['rows']:
         for name,weights in FORMULAS.items():

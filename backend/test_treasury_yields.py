@@ -34,7 +34,7 @@ def test_exact_spreads_butterflies_and_yield_change_units(tmp_path):
     result = source.view()
     assert result['status'] == 'ready' and result['latest_observation_date'] == '2026-10-28'
     assert {item['key']: item['value'] for item in result['metrics']} == {
-        '2s10s': 38, '3m10s': 87, '5s30s': 52, '5s10s': 20, '10s30s': 32,
+        '2s5s': 18, '2s10s': 38, '3m10s': 87, '5s30s': 52, '5s10s': 20, '10s30s': 32,
         '2s5s10s': -2, '2s10s30s': 6}
     assert {item['key']: item['change_bp'] for item in result['quotes']} == {'m3': -4, 'y2': -3, 'y5': 3, 'y10': 6, 'y30': 7}
     assert result['curve_date'] == '2026-10-28' and result['previous_curve_date'] == '2026-10-27'
@@ -46,12 +46,24 @@ def test_missing_legs_and_holidays_never_get_filled(tmp_path):
     extra = '2026-10-29,,4.70,4.88,5.10,\n2026-10-30,,,,,\n'
     source, _, _ = service(tmp_path, lambda _: CSV+extra)
     result = source.view();partial, holiday = result['rows'][-2:]
+    assert partial['2s5s'] == 18
     assert partial['2s10s'] == 40 and partial['2s5s10s'] == -4
     assert all(partial[key] is None for key in ('3m10s', '5s30s', '10s30s', '2s10s30s'))
-    assert all(holiday[key] is None for key in ('m3', 'y2', 'y5', 'y10', 'y30', '2s10s', '2s5s10s'))
+    assert all(holiday[key] is None for key in ('m3', 'y2', 'y5', 'y10', 'y30', '2s5s', '2s10s', '2s5s10s'))
     assert result['curve_date'] == '2026-10-28'
     assert result['quotes'][0]['date'] == '2026-10-28'
     assert result['quotes'][1]['date'] == '2026-10-29'
+
+
+def test_2s5s_preserves_zero_inversion_and_gaps_in_either_leg():
+    levels = [(4, 4.2), (None, 4.2), (4, None), (4, 4), (4, 3.9)]
+    rows = [{'date': f'2026-10-{day}', 'm3': None, 'y2': y2, 'y5': y5,
+             'y10': None, 'y30': None} for day, (y2, y5) in enumerate(levels, 26)]
+    view = analytics(rows)
+    assert [row['2s5s'] for row in view['rows']] == [20, None, None, 0, -10]
+    metric = next(item for item in view['metrics'] if item['key'] == '2s5s')
+    assert metric['value'] == -10 and metric['change_bp'] == -10
+    assert metric['date'] == '2026-10-30' and metric['previous_date'] == '2026-10-29'
 
 
 def test_parallel_yield_shift_leaves_curve_shapes_unchanged():
@@ -185,7 +197,7 @@ def test_scheduled_endpoint_poll_picks_up_new_release_and_recalculates_every_cha
     assert after['curve_date'] == '2026-10-29'
     assert [item['value'] for item in after['quotes']] == [4.16, 4.65, 4.83, 5.02, 5.35]
     assert {item['key']:item['value'] for item in after['metrics']} == {
-        '2s10s':37, '3m10s':86, '5s30s':52, '5s10s':19, '10s30s':33,
+        '2s5s':18, '2s10s':37, '3m10s':86, '5s30s':52, '5s10s':19, '10s30s':33,
         '2s5s10s':-1, '2s10s30s':4}
 
 

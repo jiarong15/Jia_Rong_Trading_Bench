@@ -28,7 +28,7 @@ async function main(){
   if(route==='/markets/bonds'){
    assert.ok(html.includes('Official sovereign yields')&&html.includes('bonds-quotes'));
    assert.ok(html.includes('aria-label="Bonds country"')&&html.includes('Singapore')&&html.includes('Canada'));
-   for(const key of ['2s10s','3m10s','5s30s','5s10s','10s30s','2s5s10s','2s10s30s'])assert.ok(html.includes(`<h3>${key}</h3>`));
+   for(const key of ['2s5s','2s10s','3m10s','5s30s','5s10s','10s30s','2s5s10s','2s10s30s'])assert.ok(html.includes(`<h3>${key}</h3>`));
    assert.equal((html.match(/<details class="bonds-analytics">/g)||[]).length,2,'Both chart sections start collapsed');
    assert.ok(!html.includes('Sources and calculation conventions'));
    assert.ok(!html.includes('SYNTHETIC SNAPSHOT')&&!html.includes('Source: fixture provider'));

@@ -1,4 +1,4 @@
-"""Published U.S. inflation, employment and housing data for the Rates page.
+"""Published U.S. policy rates, Treasury yields, inflation, employment and housing data for the Rates page.
 
 FRED levels are retained as released. Calendar-month transformations never
 bridge missing months. Series refresh independently and keep dated saved data
@@ -24,6 +24,11 @@ from .dtcc_inflation import DTCCInflationSource
 START = '1990-01-01'
 POLL = 60
 SERIES = {
+    'DFF': ('Daily','Percent','Not seasonally adjusted','Federal Reserve H.15',False),
+    'DGS2': ('Daily','Percent','Not seasonally adjusted','Federal Reserve H.15 / U.S. Treasury',False),
+    'DGS5': ('Daily','Percent','Not seasonally adjusted','Federal Reserve H.15 / U.S. Treasury',False),
+    'DGS10': ('Daily','Percent','Not seasonally adjusted','Federal Reserve H.15 / U.S. Treasury',False),
+    'DGS30': ('Daily','Percent','Not seasonally adjusted','Federal Reserve H.15 / U.S. Treasury',False),
     'CUSR0000SAC': ('Monthly','Index 1982-1984=100','Seasonally adjusted','BLS',True),
     'CUSR0000SAS': ('Monthly','Index 1982-1984=100','Seasonally adjusted','BLS',True),
     'PCEPI': ('Monthly','Index 2017=100','Seasonally adjusted','BEA',True),
@@ -45,6 +50,13 @@ def spec(key, label, identifier, transform='level', unit='%', axis='left', style
 
 
 CHARTS = [
+    {'key':f'policy_{years}y','title':f'U.S. policy rate vs {years}Y Treasury yield',
+     'subtitle':'Effective federal funds rate and Treasury constant-maturity yield',
+     'left_unit':'Rate %','series':[spec('policy_rate','Effective federal funds rate','DFF'),
+         {**spec(f'treasury_{years}y',f'{years}Y Treasury yield',f'DGS{years}'),'preserve_gaps':True}],
+     'notes':'Policy rate uses the effective federal funds rate (DFF), the observed overnight rate. Treasury yields are constant-maturity benchmarks. Both lines use published daily percent levels and retain their own observation dates; missing Treasury observations stay gaps.'}
+    for years in (2,5,10,30)
+] + [
     {'key':'cpi','title':'CPI goods & services','subtitle':'Year-over-year inflation · seasonally adjusted indexes',
      'left_unit':'% YoY','series':[spec('cpi_goods','CPI goods','CUSR0000SAC','yoy'),spec('cpi_services','CPI services','CUSR0000SAS','yoy')],
      'notes':'Goods uses the BLS commodities component, including food and energy goods. Services includes energy services. Growth is calculated from the same calendar month one year earlier.'},

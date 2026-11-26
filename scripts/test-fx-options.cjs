@@ -25,14 +25,36 @@ test('call/put and Greek switches recompute actual heatmap cells, totals and rat
  assert.equal(JSON.stringify(d),copy);
 });
 
-test('missing Greek contributions remain unavailable, do not hide trades, and do not contaminate calls-only views',()=>{
+test('missing Greeks leave covered totals and ratios visible with accurate coverage and side filters',()=>{
  const d=data();d.cells[1].gamma=null;
  const both=math.heatmapValues(d,'gamma',true,true),calls=math.heatmapValues(d,'gamma',true,false);
- assert.equal(both.grid[0][0],null);assert.equal(both.total,null);assert.equal(both.putCallRatio,null);assert.equal(both.count,6);
+ assert.equal(both.grid[0][0],10);assert.equal(both.total,10);assert.equal(both.putCallRatio,0);assert.equal(both.count,6);
+ assert.equal(both.coveredCount,3);assert.equal(both.partial,true);assert.equal(both.gridPartial[0][0],true);assert.equal(both.rowTotals[0],10);assert.equal(both.columnTotals[0],10);
+ assert.equal(both.ratioPartial,true);assert.equal(both.ratioCoveredCount,3);assert.equal(both.ratioCount,6);
  assert.equal(calls.grid[0][0],10);assert.equal(calls.total,10);assert.equal(calls.count,2);
+ assert.equal(calls.partial,false);assert.equal(calls.coveredCount,2);assert.equal(calls.ratioPartial,true);
+ const notional=math.heatmapValues(d,'notional',true,true);assert.equal(notional.total,3500);assert.equal(notional.putCallRatio,.75);assert.equal(notional.partial,false);assert.equal(notional.coveredCount,6);
  d.metrics.gamma.available=false;const missing=math.heatmapValues(d,'gamma',true,true);
  assert.equal(missing.total,null);assert.ok(missing.grid.flat().every(v=>v===null));assert.equal(missing.count,6);
  assert.equal(math.heatColor(null,10),'transparent');assert.equal(math.compactUsd(null),'—');assert.equal(math.compactUsd(0),'$0');
+});
+
+test('unsupported-only buckets stay unavailable and empty buckets differ from missing estimates',()=>{
+ const d=data();d.cells[1].gamma=null;d.cells[2].gamma=null;
+ const both=math.heatmapValues(d,'gamma',true,true),puts=math.heatmapValues(d,'gamma',false,true);
+ assert.equal(both.total,10);assert.equal(both.grid[1][1],null);assert.equal(both.rowTotals[1],null);assert.equal(both.columnTotals[1],null);
+ assert.equal(both.grid[1][0],0);assert.equal(both.putCallRatio,null);
+ assert.equal(puts.total,null);assert.equal(puts.coveredCount,0);assert.equal(puts.count,4);
+ const noCalls=data();noCalls.cells=noCalls.cells.filter(cell=>cell.side==='put');assert.equal(math.heatmapValues(noCalls,'gamma',true,true).putCallRatio,null);
+ const empty=data();empty.cells=[];const values=math.heatmapValues(empty,'gamma',true,true);assert.equal(values.total,0);assert.equal(values.partial,false);assert.equal(values.putCallRatio,null);
+});
+
+test('mixed buckets retain covered estimates and coverage survives input order and filtered views',()=>{
+ const d=data();d.cells[0].modelled_count=1;d.cells[2].gamma=null;d.cells[2].modelled_count=0;
+ const both=math.heatmapValues(d,'gamma',true,true),calls=math.heatmapValues(d,'gamma',true,false);
+ assert.equal(both.total,30);assert.equal(both.coveredCount,4);assert.equal(both.partial,true);assert.equal(both.putCallRatio,2);
+ assert.equal(calls.total,10);assert.equal(calls.coveredCount,1);assert.equal(calls.count,2);assert.equal(calls.partial,true);
+ d.cells.reverse();const reversed=math.heatmapValues(d,'gamma',true,true);assert.equal(reversed.total,both.total);assert.equal(JSON.stringify(reversed.grid),JSON.stringify(both.grid));
 });
 
 test('wrong-pair, duplicate, nonfinite and malformed buckets are rejected',()=>{
@@ -41,11 +63,12 @@ test('wrong-pair, duplicate, nonfinite and malformed buckets are rejected',()=>{
  const invalid=data();invalid.cells[0].gamma=NaN;assert.throws(()=>math.validateHeatmap(invalid,'EUR/USD'));
  const outside=data();outside.cells[0].row=99;assert.throws(()=>math.validateHeatmap(outside,'EUR/USD'));
  const unavailable=data();delete unavailable.metrics;assert.throws(()=>math.validateHeatmap(unavailable,'EUR/USD'));
+ for(const count of [-1,3,NaN,1.5]){const bad=data();bad.cells[0].modelled_count=count;assert.throws(()=>math.validateHeatmap(bad,'EUR/USD'));}
 });
 
 function harness(){
  const window=new EventTarget(),document=new EventTarget();document.hidden=false;
- let now=1000000,cursor=0,effects=[],tick,cleared=false,tree,fail=false,latest=data();const slots=[],cleanups=[],requests=[];
+ let now=1000000,cursor=0,effects=[],tick,cleared=false,tree,fail=false,latest=data(),cfetsAt='2026-11-23T07:00:00Z';const slots=[],cleanups=[],requests=[];
  window.setInterval=(fn,ms)=>{assert.equal(ms,1000);tick=fn;return 1;};window.clearInterval=()=>{cleared=true;};window.setTimeout=()=>2;window.clearTimeout=()=>{};
  const globals={window,document,Date:class extends Date{static now(){return now;}},AbortController};
  const scheduler=compile('../src/bondsData.ts',{},globals);
@@ -54,12 +77,12 @@ function harness(){
   useEffect(effect,deps){const i=cursor++,previous=slots[i];if(!previous||deps.some((v,j)=>v!==previous[j])){slots[i]=deps;effects.push(effect);}},
   useCallback(fn,deps){const i=cursor++,previous=slots[i];if(!previous||deps.some((v,j)=>v!==previous.deps[j]))slots[i]={fn,deps};return slots[i].fn;},useMemo(fn){return fn();}};
  const components={Badge:({children})=>jsx.jsx('span',{children}),Panel:({children,title,subtitle})=>jsx.jsxs('section',{children:[jsx.jsx('h3',{children:title}),subtitle,children]}),Metric:({label,value,foot})=>jsx.jsxs('div',{children:[label,value,foot]}),number:v=>String(v),stamp:v=>v};
- const module=compile('../src/FxOptionsHeatmap.tsx',{'react':hooks,'react/jsx-runtime':jsx,'lucide-react':{Download:'Download',RefreshCw:'RefreshCw'},'./api':{api:async path=>{requests.push(path);if(fail)throw Error('Source interruption');return structuredClone(latest);},download(){}},'./components':components,'./bondsData':scheduler,'./fxOptionsData':math,'./fxOptions.css':{}},globals);
+ const module=compile('../src/FxOptionsHeatmap.tsx',{'react':hooks,'react/jsx-runtime':jsx,'lucide-react':{Download:'Download',RefreshCw:'RefreshCw'},'./api':{api:async path=>{requests.push(path);if(fail)throw Error('Source interruption');const result=structuredClone(latest);result.pair=decodeURIComponent(path.match(/pair=([^&]+)/)[1]);if(result.pair==='USD/CNY')Object.assign(result,{volatility_published_at:cfetsAt,market_checked_at:'2026-11-23T08:01:00Z',pricing_date:'2026-11-23',pricing_checked_at:'2026-11-23T09:01:00Z',source:'DTCC trades · CFETS USD/CNY estimated Greeks'});return result;},download(){}},'./components':components,'./bondsData':scheduler,'./fxOptionsData':math,'./fxOptions.css':{}},globals);
  function render(){cursor=0;tree=module.default({refresh:0});const pending=effects;effects=[];for(const effect of pending){const cleanup=effect();if(cleanup)cleanups.push(cleanup);}}
  async function settle(){for(let i=0;i<12;i++)await Promise.resolve();render();}
  function elements(){const nodes=[];function walk(node){if(!node||typeof node!=='object')return;if(Array.isArray(node)){node.forEach(walk);return;}nodes.push(node);walk(node.props?.children);}walk(tree);return nodes;}
  const grid=()=>elements().find(node=>node.type===module.FxOptionsGrid)?.props;
- render();return {module,window,document,requests,settle,render,elements,grid,advance:ms=>now+=ms,tick:()=>{if(!cleared)tick();},change:value=>{latest=structuredClone(latest);latest.cells[0].gamma=value;latest.last_trade_at='2026-10-31T11:00:00Z';},fail:value=>fail=value,stop:()=>cleanups.forEach(fn=>fn())};
+ render();return {module,window,document,requests,settle,render,elements,grid,advance:ms=>now+=ms,tick:()=>{if(!cleared)tick();},changeCfets:value=>{cfetsAt=value;},change:value=>{latest=structuredClone(latest);latest.cells[0].gamma=value;latest.last_trade_at='2026-10-31T11:00:00Z';},fail:value=>fail=value,stop:()=>cleanups.forEach(fn=>fn())};
 }
 
 test('new source trades and estimated notionals update automatically after 60 seconds',async()=>{
@@ -68,11 +91,31 @@ test('new source trades and estimated notionals update automatically after 60 se
  f.advance(1);f.tick();await f.settle();assert.equal(f.grid().data.cells[0].gamma,40);assert.equal(f.grid().data.last_trade_at,'2026-10-31T11:00:00Z');f.stop();
 });
 
+test('USD/CNY selection displays CFETS source times and refreshes new fixings automatically',async()=>{
+ const f=harness();await f.settle();
+ assert.ok(f.elements().some(node=>node.type==='option'&&node.props.children==='USD/CNY'));
+ const selector=f.elements().find(node=>node.type==='select'&&node.props['aria-label']==='FX options currency pair');
+ selector.props.onChange({target:{value:'USD/CNY'}});f.render();await f.settle();
+ assert.equal(f.grid().data.pair,'USD/CNY');assert.equal(f.grid().data.volatility_published_at,'2026-11-23T07:00:00Z');
+ assert.ok(f.elements().some(node=>String(node.props?.children).includes('CFETS checked')));
+ assert.ok(f.elements().some(node=>String(node.props?.children).includes('Spot / forward reference')));
+ f.changeCfets('2026-11-23T08:00:00Z');f.change(40);f.advance(60000);f.tick();await f.settle();
+ assert.equal(f.grid().data.volatility_published_at,'2026-11-23T08:00:00Z');assert.equal(f.grid().data.cells[0].gamma,40);f.stop();
+});
+
 test('actual controls change selected measure and option sides; rendered grid is labelled and scrollable',async()=>{
  const f=harness();await f.settle();
  const delta=f.elements().find(node=>node.type==='button'&&node.props.children==='Delta notional');delta.props.onClick();f.render();assert.equal(f.grid().metric,'delta');
  const boxes=f.elements().filter(node=>node.type==='input'&&node.props.type==='checkbox');boxes[1].props.onChange({target:{checked:false}});f.render();assert.equal(f.grid().puts,false);assert.equal(f.grid().calls,true);
  const html=renderToString(jsx.jsx(f.module.FxOptionsGrid,f.grid()));assert.ok(html.includes('role="region"'));assert.ok(html.includes('scroll horizontally'));assert.ok(html.includes('Strike / spot'));assert.ok(html.includes('1–2 months'));assert.ok(html.includes('30 Oct')||html.includes('2026-10-30'));assert.ok(html.includes('title='));assert.ok(!html.includes('NaN'));f.stop();
+});
+
+test('partial totals and ratio render coverage labels and unsupported cells remain dashes',async()=>{
+ const f=harness();await f.settle();const d=data();d.cells[2].gamma=null;
+ const html=renderToString(jsx.jsx(f.module.FxOptionsGrid,{data:d,metric:'gamma',calls:true,puts:true}));
+ const text=html.replace(/<!--.*?-->/g,'');
+ assert.ok(text.includes('Covered gamma notional'));assert.ok(text.includes('$30*'));assert.ok(text.includes('Put / call ratio2*'));
+ assert.ok(text.includes('5 of 6 selected trades'));assert.ok(text.includes('Partial coverage'));assert.ok(text.includes('unavailable'));assert.ok(!text.includes('NaN'));f.stop();
 });
 
 test('hidden tabs catch up, source failures preserve dated values, reconnect recovers, and cleanup stops polling',async()=>{

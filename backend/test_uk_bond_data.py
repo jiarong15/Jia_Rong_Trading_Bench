@@ -133,4 +133,4 @@ def test_uk_endpoint_has_uk_sources_and_saved_only_never_downloads(tmp_path):
     assert view['country']['code']=='GBR' and len(view['curve'])==5
     assert view['sources'][0]['url']==uk.BILL_REFERENCE
     assert all('stlouisfed' not in item['url'] for item in view['sources'])
-    assert len(view['metrics'])==7 and 'tender-date' in view['frequency']
+    assert len(view['metrics'])==8 and 'tender-date' in view['frequency']

@@ -1,0 +1,284 @@
+{
+  "head": {
+    "version": "2.0",
+    "provider": "CWAP",
+    "req_code": "",
+    "rep_code": "200",
+    "rep_message": "",
+    "ts": 1795431364734,
+    "producer": "",
+    "tstext": "2026-11-23 18:56:04"
+  },
+  "data": {
+    "volatilitySurfaceList": [
+      {
+        "value": "0",
+        "cnLabel": "ATM",
+        "enLabel": "ATM"
+      },
+      {
+        "value": "4",
+        "cnLabel": "25D CALL",
+        "enLabel": "25D CALL"
+      },
+      {
+        "value": "3",
+        "cnLabel": "25D PUT",
+        "enLabel": "25D PUT"
+      },
+      {
+        "value": "2",
+        "cnLabel": "10D CALL",
+        "enLabel": "10D CALL"
+      },
+      {
+        "value": "1",
+        "cnLabel": "10D PUT",
+        "enLabel": "10D PUT"
+      },
+      {
+        "value": "7",
+        "cnLabel": "25D RR",
+        "enLabel": "25D RR"
+      },
+      {
+        "value": "8",
+        "cnLabel": "25D BF",
+        "enLabel": "25D BF"
+      },
+      {
+        "value": "9",
+        "cnLabel": "10D RR",
+        "enLabel": "10D RR"
+      },
+      {
+        "value": "a",
+        "cnLabel": "10D BF",
+        "enLabel": "10D BF"
+      }
+    ],
+    "ccyPairList": [
+      {
+        "value": "USD.CNY",
+        "cnLabel": "USD.CNY",
+        "enLabel": "USD.CNY"
+      }
+    ],
+    "ccyPair": "USD.CNY",
+    "ccyDate": "2026-11-23",
+    "volatilitySurface": "0",
+    "dataXml": "<?xml version='1.0' encoding='UTF-8'?><chart><xaxis><value xid='0'></value><value xid='1' show='true'>1D</value><value xid='2' show='true'>1W</value><value xid='3' show='true'>2W</value><value xid='4' show='true'>3W</value><value xid='5' show='true'>1M</value><value xid='6' show='true'>2M</value><value xid='7' show='true'>3M</value><value xid='8'></value><value xid='9'></value><value xid='10' show='true'>6M</value><value xid='11'></value><value xid='12'></value><value xid='13' show='true'>9M</value><value xid='14'></value><value xid='15'></value><value xid='16' show='true'>1Y</value><value xid='17'></value><value xid='18'></value><value xid='19'></value><value xid='20'></value><value xid='21'></value><value xid='22' show='true'>18M</value><value xid='23'></value><value xid='24'></value><value xid='25'></value><value xid='26'></value><value xid='27'></value><value xid='28' show='true'>2Y</value><value xid='29'></value><value xid='30'></value><value xid='31'></value><value xid='32'></value><value xid='33'></value><value xid='34'></value><value xid='35'></value><value xid='36'></value><value xid='37'></value><value xid='38'></value><value xid='39'></value><value xid='40' show='true'>3Y</value></xaxis><graphs><graph gid='0'><value xid='1'>1.8300000000</value><value xid='2'>1.8500000000</value><value xid='3'>1.8000000000</value><value xid='4'>1.8000000000</value><value xid='5'>1.8750000000</value><value xid='6'>1.9500000000</value><value xid='7'>1.9500000000</value><value xid='10'>2.3500000000</value><value xid='13'>2.6500000000</value><value xid='16'>2.9388000000</value><value xid='22'>2.8000000000</value><value xid='28'>3.1000000000</value><value xid='40'>3.0000000000</value></graph><graph gid='1'><value xid='1'>1.8300000000</value><value xid='2'>2.4000000000</value><value xid='3'>2.3500000000</value><value xid='4'>2.3000000000</value><value xid='5'>1.8750000000</value><value xid='6'>2.2500000000</value><value xid='7'>2.1000000000</value><value xid='10'>2.4500000000</value><value xid='13'>2.7500000000</value><value xid='16'>2.9388000000</value><value xid='22'>3.3000000000</value><value xid='28'>3.2500000000</value><value xid='40'>4.0000000000</value></graph><graph gid='2'><value xid='1'>1.8300000000</value><value xid='2'>1.9104000000</value><value xid='3'>1.8500000000</value><value xid='4'>2.0500000000</value><value xid='5'>1.8750000000</value><value xid='6'>2.0947000000</value><value xid='7'>2.1000000000</value><value xid='10'>2.4288000000</value><value xid='13'>2.7054000000</value><value xid='16'>2.9388000000</value><value xid='22'>3.0500000000</value><value xid='28'>3.1750000000</value><value xid='40'>3.5000000000</value></graph></graphs></chart>",
+    "showCcyTimeList": [
+      {
+        "value": "10:00",
+        "cnLabel": "10:00",
+        "enLabel": "10:00"
+      },
+      {
+        "value": "11:00",
+        "cnLabel": "11:00",
+        "enLabel": "11:00"
+      },
+      {
+        "value": "14:00",
+        "cnLabel": "14:00",
+        "enLabel": "14:00"
+      },
+      {
+        "value": "15:00",
+        "cnLabel": "15:00",
+        "enLabel": "15:00"
+      },
+      {
+        "value": "16:00",
+        "cnLabel": "16:00",
+        "enLabel": "16:00"
+      }
+    ],
+    "ccyTime": "16:00"
+  },
+  "records": [
+    {
+      "tradeDate": "---",
+      "tradeDateEn": "---",
+      "tradeTime": "---",
+      "tradeTimeCondition": "---",
+      "ccyPair": "USD.CNY",
+      "ccyPairEN": "USD.CNY",
+      "volatilityType": "ATM",
+      "volatilityTypeEN": "ATM",
+      "tenor": "1D",
+      "bidVolatilityStr": "1.8300",
+      "askVolatilityStr": "1.8300",
+      "midVolatilityStr": "1.8300"
+    },
+    {
+      "tradeDate": "---",
+      "tradeDateEn": "---",
+      "tradeTime": "---",
+      "tradeTimeCondition": "---",
+      "ccyPair": "USD.CNY",
+      "ccyPairEN": "USD.CNY",
+      "volatilityType": "ATM",
+      "volatilityTypeEN": "ATM",
+      "tenor": "1W",
+      "bidVolatilityStr": "1.8500",
+      "askVolatilityStr": "2.4000",
+      "midVolatilityStr": "1.9104"
+    },
+    {
+      "tradeDate": "---",
+      "tradeDateEn": "---",
+      "tradeTime": "---",
+      "tradeTimeCondition": "---",
+      "ccyPair": "USD.CNY",
+      "ccyPairEN": "USD.CNY",
+      "volatilityType": "ATM",
+      "volatilityTypeEN": "ATM",
+      "tenor": "2W",
+      "bidVolatilityStr": "1.8000",
+      "askVolatilityStr": "2.3500",
+      "midVolatilityStr": "1.8500"
+    },
+    {
+      "tradeDate": "---",
+      "tradeDateEn": "---",
+      "tradeTime": "---",
+      "tradeTimeCondition": "---",
+      "ccyPair": "USD.CNY",
+      "ccyPairEN": "USD.CNY",
+      "volatilityType": "ATM",
+      "volatilityTypeEN": "ATM",
+      "tenor": "3W",
+      "bidVolatilityStr": "1.8000",
+      "askVolatilityStr": "2.3000",
+      "midVolatilityStr": "2.0500"
+    },
+    {
+      "tradeDate": "---",
+      "tradeDateEn": "---",
+      "tradeTime": "---",
+      "tradeTimeCondition": "---",
+      "ccyPair": "USD.CNY",
+      "ccyPairEN": "USD.CNY",
+      "volatilityType": "ATM",
+      "volatilityTypeEN": "ATM",
+      "tenor": "1M",
+      "bidVolatilityStr": "1.8750",
+      "askVolatilityStr": "1.8750",
+      "midVolatilityStr": "1.8750"
+    },
+    {
+      "tradeDate": "---",
+      "tradeDateEn": "---",
+      "tradeTime": "---",
+      "tradeTimeCondition": "---",
+      "ccyPair": "USD.CNY",
+      "ccyPairEN": "USD.CNY",
+      "volatilityType": "ATM",
+      "volatilityTypeEN": "ATM",
+      "tenor": "2M",
+      "bidVolatilityStr": "1.9500",
+      "askVolatilityStr": "2.2500",
+      "midVolatilityStr": "2.0947"
+    },
+    {
+      "tradeDate": "---",
+      "tradeDateEn": "---",
+      "tradeTime": "---",
+      "tradeTimeCondition": "---",
+      "ccyPair": "USD.CNY",
+      "ccyPairEN": "USD.CNY",
+      "volatilityType": "ATM",
+      "volatilityTypeEN": "ATM",
+      "tenor": "3M",
+      "bidVolatilityStr": "1.9500",
+      "askVolatilityStr": "2.1000",
+      "midVolatilityStr": "2.1000"
+    },
+    {
+      "tradeDate": "---",
+      "tradeDateEn": "---",
+      "tradeTime": "---",
+      "tradeTimeCondition": "---",
+      "ccyPair": "USD.CNY",
+      "ccyPairEN": "USD.CNY",
+      "volatilityType": "ATM",
+      "volatilityTypeEN": "ATM",
+      "tenor": "6M",
+      "bidVolatilityStr": "2.3500",
+      "askVolatilityStr": "2.4500",
+      "midVolatilityStr": "2.4288"
+    },
+    {
+      "tradeDate": "---",
+      "tradeDateEn": "---",
+      "tradeTime": "---",
+      "tradeTimeCondition": "---",
+      "ccyPair": "USD.CNY",
+      "ccyPairEN": "USD.CNY",
+      "volatilityType": "ATM",
+      "volatilityTypeEN": "ATM",
+      "tenor": "9M",
+      "bidVolatilityStr": "2.6500",
+      "askVolatilityStr": "2.7500",
+      "midVolatilityStr": "2.7054"
+    },
+    {
+      "tradeDate": "---",
+      "tradeDateEn": "---",
+      "tradeTime": "---",
+      "tradeTimeCondition": "---",
+      "ccyPair": "USD.CNY",
+      "ccyPairEN": "USD.CNY",
+      "volatilityType": "ATM",
+      "volatilityTypeEN": "ATM",
+      "tenor": "1Y",
+      "bidVolatilityStr": "2.9388",
+      "askVolatilityStr": "2.9388",
+      "midVolatilityStr": "2.9388"
+    },
+    {
+      "tradeDate": "---",
+      "tradeDateEn": "---",
+      "tradeTime": "---",
+      "tradeTimeCondition": "---",
+      "ccyPair": "USD.CNY",
+      "ccyPairEN": "USD.CNY",
+      "volatilityType": "ATM",
+      "volatilityTypeEN": "ATM",
+      "tenor": "18M",
+      "bidVolatilityStr": "2.8000",
+      "askVolatilityStr": "3.3000",
+      "midVolatilityStr": "3.0500"
+    },
+    {
+      "tradeDate": "---",
+      "tradeDateEn": "---",
+      "tradeTime": "---",
+      "tradeTimeCondition": "---",
+      "ccyPair": "USD.CNY",
+      "ccyPairEN": "USD.CNY",
+      "volatilityType": "ATM",
+      "volatilityTypeEN": "ATM",
+      "tenor": "2Y",
+      "bidVolatilityStr": "3.1000",
+      "askVolatilityStr": "3.2500",
+      "midVolatilityStr": "3.1750"
+    },
+    {
+      "tradeDate": "---",
+      "tradeDateEn": "---",
+      "tradeTime": "---",
+      "tradeTimeCondition": "---",
+      "ccyPair": "USD.CNY",
+      "ccyPairEN": "USD.CNY",
+      "volatilityType": "ATM",
+      "volatilityTypeEN": "ATM",
+      "tenor": "3Y",
+      "bidVolatilityStr": "3.0000",
+      "askVolatilityStr": "4.0000",
+      "midVolatilityStr": "3.5000"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-"""Read-only fresh FRED/DTCC source check for all seven U.S. Rates panels."""
+"""Read-only fresh FRED/DTCC source check for all eleven U.S. Rates panels."""
 from pathlib import Path
 import sys
 

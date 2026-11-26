@@ -10,8 +10,9 @@ from threading import Event, RLock, Thread
 from time import monotonic
 
 from .dtcc_inflation import BASE, public_bytes
-from .fx_exact_feed import PAIRS, timestamp
-from .fx_option_models import COLUMNS, DEFINITIONS, ROWS, build_cells, parse_fx_archive, resolve_trades, saxo_surface
+from .fx_exact_feed import timestamp
+from .fx_option_models import OPTION_PAIRS, COLUMNS, DEFINITIONS, ROWS, build_cells, parse_fx_archive, resolve_trades, saxo_surface
+from .cfets_fx import SOURCE_URL as CFETS_URL, PRICING_URL as CFETS_PRICING_URL
 
 POLL=60
 BASIS='DTCC_FX_VANILLA_TRADE_FLOW_V1'
@@ -65,7 +66,7 @@ class FXOptionTape:
                     timestamp(event['at'],now); trade=event['trade']
                     if trade is not None:
                         executed=timestamp(trade['executed_at'],now)
-                        if (trade['pair'] not in PAIRS or trade['side'] not in ('call','put') or trade['date']!=executed.date().isoformat()
+                        if (trade['pair'] not in OPTION_PAIRS or trade['side'] not in ('call','put') or trade['date']!=executed.date().isoformat()
                                 or date.fromisoformat(trade['expiry'])<executed.date()
                                 or any(type(trade[key]) not in (int,float) or not math.isfinite(trade[key]) or trade[key]<=0 for key in ('strike','notional'))):
                             raise ValueError('Invalid saved FX trade.')
@@ -79,7 +80,13 @@ class FXOptionTape:
     def download(self,name,metadata,now):
         kind,_=identity(name); route='cumulative' if kind=='CUMULATIVE' else 'intraday'
         body=self.transport(BASE+f'api/report/{route}/cftc/'+name)
-        return {'published_at':metadata['published_at'],'events':parse_fx_archive(body,now,metadata['rows'])}
+        return {'published_at':metadata['published_at'],'events':parse_fx_archive(body,now,metadata['rows']),
+                'pair_scope':sorted(OPTION_PAIRS)}
+
+    @staticmethod
+    def needs_parse(files,name):
+        # Keep legacy trades visible while old archives are re-read for CNY.
+        return name not in files or files[name].get('pair_scope')!=sorted(OPTION_PAIRS)
 
     def refresh(self,now):
         try:
@@ -109,14 +116,14 @@ class FXOptionTape:
                         except Exception: failed.append(name)
             # Process the latest complete day and intraday tape before older
             # history. Live observations are visible during background backfill.
-            if latest not in files:
+            if self.needs_parse(files,latest):
                 batch([latest],daily)
             baseline=max((identity(name)[1] for name in files if identity(name)[0]=='CUMULATIVE'),default='1990-01-01')
-            needed=[name for name in slices if slices[name]['day']>baseline and name not in files]
+            needed=[name for name in slices if slices[name]['day']>baseline and self.needs_parse(files,name)]
             needed.sort(key=lambda name:slices[name]['published_at'],reverse=True)
             batch(needed[:64],slices)
             self.publish(files,daily,slices,cutoff,baseline,failed,save=False)
-            missing=[name for name in daily if daily[name]['day']>=cutoff and name not in files]
+            missing=[name for name in daily if daily[name]['day']>=cutoff and self.needs_parse(files,name)]
             missing.sort(key=lambda name:daily[name]['day'],reverse=True)
             batch(missing[:8],daily)
             self.publish(files,daily,slices,cutoff,baseline,failed,save=True)
@@ -130,8 +137,8 @@ class FXOptionTape:
         trades=resolve_trades(pruned)
         with self.lock:
             self.files=pruned; self.trades=trades
-            self.pending_history=sum(name not in pruned for name in daily if daily[name]['day']>=cutoff)
-            self.pending_live=sum(name not in pruned for name in slices if slices[name]['day']>baseline)
+            self.pending_history=sum(self.needs_parse(pruned,name) for name in daily if daily[name]['day']>=cutoff)
+            self.pending_live=sum(self.needs_parse(pruned,name) for name in slices if slices[name]['day']>baseline)
             self.published=max((file['published_at'] for file in pruned.values()),default=None)
             if not failed:
                 self.checked=self.clock().isoformat()
@@ -152,9 +159,10 @@ class FXOptionTape:
 
 
 class FXOptionsService:
-    def __init__(self,path,carry_service,enabled=True,transport=None,clock=None,tape=None):
+    def __init__(self,path,carry_service,enabled=True,transport=None,clock=None,tape=None,cfets_source=None):
         self.clock=clock or (lambda:datetime.now(timezone.utc)); self.enabled=enabled; self.carry=carry_service
         self.tape=tape or FXOptionTape(path,transport=transport,clock=self.clock)
+        self.cfets=cfets_source
         self.lock=RLock(); self.stop=Event(); self.thread=None; self.inflight=False; self.attempt=None; self.input_error=None
 
     def refresh(self,force=False):
@@ -164,16 +172,28 @@ class FXOptionsService:
                 return
             self.attempt=now; self.inflight=True
         try:
-            with ThreadPoolExecutor(max_workers=2) as pool:
+            with ThreadPoolExecutor(max_workers=3) as pool:
                 tape_job=pool.submit(self.tape.refresh,now)
                 inputs_job=pool.submit(self.carry.view)
+                cfets_job=pool.submit(self.cfets.refresh,force=force) if self.cfets else None
                 tape_job.result()
                 try: inputs_job.result(); self.input_error=None
                 except Exception: self.input_error='Market-input refresh failed; source-dated saved inputs are used when available.'
+                if cfets_job:cfets_job.result()
         finally:
             with self.lock: self.inflight=False
 
-    def inputs(self,now,pair):
+    def inputs(self,now,pair,cfets_state=None):
+        if pair=='USD/CNY':
+            state=cfets_state if cfets_state is not None else self.cfets.snapshot(now) if self.cfets else {}
+            vol=state.get('volatility'); pricing=state.get('pricing')
+            quote=None
+            if pricing:
+                quote={'spot':pricing['spot'],'spot_observation_date':pricing['date'],'spot_time':None,
+                    'forward_12m':next(node['forward'] for node in pricing['nodes'] if node['tenor']=='1Y'),
+                    'forward_curve':pricing['nodes'],'max_model_years':3}
+            nodes=[(node['years'],node['volatility_pct']/100) for node in vol['nodes']] if vol and state.get('usable') else []
+            return quote,nodes,vol['published_at'] if vol else None,state.get('warnings',[])
         with self.carry.lock:
             forward=self.carry.forward_source.snapshot(now) if self.carry.forward_source else {'quotes':{},'errors':{}}
             source=self.carry.volatility_source
@@ -198,38 +218,52 @@ class FXOptionsService:
         return quote,surface.get(pair,[]),published,warnings
 
     def view(self,pair='EUR/USD',window_days=30,refresh=False,saved_only=False):
-        if pair not in PAIRS or window_days not in (1,7,30):
+        if pair not in OPTION_PAIRS or window_days not in (1,7,30):
             raise ValueError('Unsupported FX option pair or trade window.')
         if self.enabled and not saved_only:
             self.refresh(force=refresh)
         now=self.clock(); tape=self.tape.snapshot()
-        quote,nodes,published,warnings=self.inputs(now,pair)
+        cny=pair=='USD/CNY'
+        cfets=self.cfets.snapshot(now) if cny and self.cfets else {}
+        quote,nodes,published,warnings=self.inputs(now,pair,cfets)
         cells,selected,modelled,last_trade=build_cells(tape['trades'] if self.enabled else [],pair,now,window_days,quote,nodes)
+        coverage_requirement='CFETS ATM volatility through 3Y and a supported dated forward' if cny else 'a supported Saxo ATM tenor (up to one year) and current spot/forward inputs'
         has_source=self.enabled and tape['checked_at'] is not None and quote is not None
         metrics={key:{'available':bool(has_source and (key=='notional' or modelled>0 or selected==0 and nodes)),
-                     'definition':definition,'coverage_note':f'{modelled} of {selected} loaded trades have Greek estimates. Missing cells require a supported Saxo ATM tenor (up to one year) and current spot/forward inputs.' if key!='notional' else f'{selected} unexpired trades loaded in this window. Notionals use the displayed spot reference.' if has_source else 'A dated spot reference and loaded DTCC trade files are required.'}
+                     'definition':definition,'coverage_note':f'{modelled} of {selected} loaded trades have Greek estimates. Missing cells require {coverage_requirement}.' if key!='notional' else f'{selected} unexpired trades loaded in this window. Notionals use the displayed spot reference.' if has_source else 'A dated spot reference and loaded DTCC trade files are required.'}
                  for key,definition in DEFINITIONS.items()}
         notices=[
             'DTCC-reported European vanilla trades executed within the selected window and expiring after today. This is gross trade activity, not open interest, net positioning or dealer exposure. Calls/puts refer to the displayed pair’s base currency.',
             'ESTIMATED GREEKS: undiscounted Black forward sensitivities. A flat carry rate is inferred from the connected spot and 1Y forward; Saxo ATM total variance is interpolated across 1W, 1M, 3M, 6M and 12M tenors. The 1W volatility is held flat below one week. Smile/skew and discount factors are not modelled.',
-            'Missing volatility, tenors beyond one year and missing market inputs leave Greek cells unavailable. A missing contribution makes that side/bucket total unavailable. Same-day expiries are excluded because the cut time is not reported.',
+            'Greek cells and totals sum covered trades only; partial coverage is labelled. Trades with missing volatility, tenors beyond one year or missing market inputs are excluded from Greek sums, but retain reported notional. Cells with no covered trades remain unavailable. Greek put/call ratios use covered trades on both sides. Same-day expiries are excluded because the cut time is not reported.',
             'Only standard, non-package, European vanilla trades are included. Prints with inconsistent contract dates or currency amounts are excluded. Corrections/errors revise original prints; modifications/terminations are not counted as new trades or used to infer remaining positions. Public notionals may be rounded/capped, and reporting delays apply.',
         ]
-        if quote:
+        if cny:
+            notices[1]='ESTIMATED GREEKS: undiscounted Black forward sensitivities using CFETS onshore USD/CNY OTC mean spot, published swap points (0.0001 CNY per pip) and ATM volatility. Total ATM variance is interpolated across 1D to 3Y; forward outrights are interpolated log-linearly on CFETS published expiry dates. Below 1D, the 1D volatility is held flat. Smile/skew and discount factors are not modelled. No volatility or forward extrapolation beyond source coverage.'
+            notices[2]=notices[2].replace('tenors beyond one year','tenors beyond three years or beyond the last published forward expiry')
+            notices.append('CFETS publishes volatility fixings at 10:00, 11:00, 14:00, 15:00 and 16:00 China/Singapore time on trading days. Spot/forward pricing parameters are published daily at 17:00. Automatic 60-second checks load new publications; this is not a continuous tick feed. USD/CNY is onshore renminbi; USD/CNH trades are excluded.')
+            if quote:notices.append(f"CFETS OTC mean spot / forward pricing reference date: {quote['spot_observation_date']}. Intraday spot observation time is not published in this table. Source: {CFETS_PRICING_URL}")
+        elif quote:
             notices.append(f"Spot reference date: {quote['spot_observation_date']} ("+('time '+quote['spot_time'] if quote.get('spot_time') else 'time not published')+f"). 1Y forward quote: {quote['quote_time']}. Source: Investing.com, also used by the carry charts.")
         if published:
-            notices.append('Saxo ATM volatility report published '+published+'. It is a periodically published report, not streaming volatility.')
+            notices.append(('CFETS USD/CNY ATM curve published ' if cny else 'Saxo ATM volatility report published ')+published+'. It is a periodically published curve, not streaming volatility.')
         if not nodes:
-            notices.append('No supported current Saxo ATM volatility curve is available for this pair. Reported notional remains available when spot data is loaded.')
+            notices.append(('No supported current CFETS volatility/forward inputs are available for USD/CNY.' if cny else 'No supported current Saxo ATM volatility curve is available for this pair.')+' Reported notional remains available when spot data is loaded.')
         if tape['pending_history_files'] or tape['pending_live_files']:
             notices.insert(0,f"PROVISIONAL COVERAGE: {tape['pending_history_files']} older daily files and {tape['pending_live_files']} intraday files remain. Values reflect loaded trades only; history fills automatically.")
         notices.extend(warnings)
-        error=tape['error'] or self.input_error
+        error=tape['error'] or (' '.join(cfets.get('errors',{}).values()) if cny else self.input_error)
         status='disabled' if not self.enabled else 'stale' if error or warnings else 'catching_up' if tape['pending_live_files'] or tape['pending_history_files'] else 'ready' if has_source and metrics['gamma']['available'] else 'partial' if has_source else 'unavailable'
-        return {'pair':pair,'status':status,'basis':'reported_trades','source':'DTCC public FX trades · estimated Greeks','source_url':BASE,
+        return {'pair':pair,'status':status,'basis':'reported_trades','source':'DTCC trades · CFETS USD/CNY estimated Greeks' if cny else 'DTCC public FX trades · estimated Greeks','source_url':CFETS_URL if cny else BASE,
                 'checked_at':tape['checked_at'],'as_of':now.isoformat(),'last_trade_at':last_trade,'published_at':tape['published_at'],
                 'spot':quote['spot'] if quote else None,'spot_at':quote.get('spot_time') if quote else None,
                 'spot_date':quote.get('spot_observation_date') if quote else None,'volatility_published_at':published,
+                'market_source':'CFETS / ChinaMoney' if cny else 'Investing.com / Saxo',
+                'market_source_url':CFETS_URL if cny else None,
+                'market_checked_at':cfets.get('checks',{}).get('volatility') if cny else None,
+                'pricing_checked_at':cfets.get('checks',{}).get('pricing') if cny else None,
+                'pricing_date':quote['spot_observation_date'] if cny and quote else None,
+                'volatility_curve':cfets['volatility']['nodes'] if cny and cfets.get('volatility') else [],
                 'window_start':(now-timedelta(days=window_days)).isoformat(),'window_end':now.isoformat(),
                 'rows':ROWS,'columns':COLUMNS,'cells':cells,'metrics':metrics,'notices':notices,'error':error,
                 'included_trades':selected,'modelled_trades':modelled,'pending_history_files':tape['pending_history_files'],
@@ -238,13 +272,14 @@ class FXOptionsService:
     def _run(self):
         while not self.stop.is_set():
             start=monotonic()
-            self.refresh(force=True)
+            self.refresh()
             if self.stop.wait(max(.1,POLL-(monotonic()-start))):
                 break
 
     def start(self):
         if not self.enabled:
             return
+        if self.cfets:self.cfets.start()
         with self.lock:
             if self.thread and self.thread.is_alive():
                 return
@@ -252,5 +287,6 @@ class FXOptionsService:
 
     def close(self):
         self.stop.set()
+        if self.cfets:self.cfets.close()
         if self.thread:
             self.thread.join(timeout=4)

@@ -47,7 +47,7 @@ def test_official_benchmark_query_reads_yields_and_never_revives_the_discontinue
     assert len(view['curve'])==4 and view['curve_date']=='2026-10-30'
     assert view['quotes'][0]['value'] is None and view['quotes'][0]['series_id'] is None
     assert {item['key']:item['value'] for item in view['metrics']}=={
-        '2s10s':37,'3m10s':None,'5s30s':24,'5s10s':21,'10s30s':3,'2s5s10s':-5,'2s10s30s':34}
+        '2s5s':16,'2s10s':37,'3m10s':None,'5s30s':24,'5s10s':21,'10s30s':3,'2s5s10s':-5,'2s10s30s':34}
     assert parse_qs(calls[-1].decode())[PREFIX+'StartYearDropDownList']==['2000']
 
 
@@ -117,6 +117,6 @@ def test_endpoint_returns_only_singapore_sources_and_discloses_unavailable_matur
     response=TestClient(app).get('/api/bonds/treasury?country=SGP');view=response.json()
     assert response.headers['Cache-Control']=='no-store' and view['country']['currency']=='SGD'
     assert view['country']['code']=='SGP' and view['source_route']==BY_CODE['SGP']['source']
-    assert len(view['curve'])==4 and len(view['metrics'])==7 and view['metrics'][1]['value'] is None
+    assert len(view['curve'])==4 and len(view['metrics'])==8 and view['metrics'][1]['value'] is None
     assert all('mas.gov.sg' in source['url'] for source in view['sources'])
     assert view['quotes'][0]['value'] is None and '20 June 2013' in view['coverage_note']

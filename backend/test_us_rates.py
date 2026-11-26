@@ -34,9 +34,9 @@ def isolated_swap(monkeypatch):
     monkeypatch.delenv('RATES_INFLATION_SWAP_TOKEN',raising=False)
 
 
-def test_seven_panels_correct_definitions_units_and_native_dates(tmp_path):
+def test_eleven_panels_correct_definitions_units_and_native_dates(tmp_path):
     source=Source();service=USRatesService(tmp_path/'rates.json',transport=source,clock=lambda:NOW,api_key='fixture')
-    result=service.view();assert len(result['charts'])==7 and len(source.calls)==13
+    result=service.view();assert len(result['charts'])==11 and len(source.calls)==18
     charts={c['key']:c for c in result['charts']}
     assert [s['series_id'] for s in charts['cpi']['series']]==['CUSR0000SAC','CUSR0000SAS']
     assert [s['series_id'] for s in charts['pce']['series']]==['PCEPI','PCEPILFE']
@@ -52,6 +52,33 @@ def test_seven_panels_correct_definitions_units_and_native_dates(tmp_path):
     assert swap['status']=='disabled' and swap['observations']==[] and swap['last_value'] is None
     assert breakeven['series_id']=='T5YIE' and expected['series_id']=='EXPINF5YR'
     assert all(s['last_observation_date']=='2026-10-01' for c in result['charts'] for s in c['series'] if s['last_value'] is not None)
+
+
+def test_policy_comparisons_share_daily_funds_rate_and_refresh_independently(tmp_path):
+    source=Source();now=[NOW]
+    source.values['DFF']={'2026-10-28':0,'2026-10-29':.05,'2026-10-30':.1,'2026-10-31':.12}
+    for identifier in ('DGS2','DGS5','DGS10','DGS30'):
+        source.values[identifier]={'2026-10-28':-.1,'2026-10-29':3.8,'2026-10-30':None}
+    service=USRatesService(tmp_path/'rates.json',transport=source,clock=lambda:now[0],api_key='')
+    first=service.view()
+    assert [chart['key'] for chart in first['charts'][:4]]==['policy_2y','policy_5y','policy_10y','policy_30y']
+    assert source.calls.count('DFF')==1
+    for chart,years in zip(first['charts'][:4],(2,5,10,30)):
+        policy,treasury=chart['series']
+        assert [policy['series_id'],treasury['series_id']]==['DFF',f'DGS{years}']
+        assert chart['left_unit']=='Rate %' and 'right_unit' not in chart
+        assert policy['frequency']==treasury['frequency']=='Daily'
+        assert policy['observations'][0]['value']==0 and policy['last_observation_date']=='2026-10-31'
+        assert treasury['observations'][0]['value']==-.1 and treasury['observations'][-1]['value'] is None
+        assert treasury['last_observation_date']=='2026-10-29' and treasury['preserve_gaps']
+    source.values['DFF']['2026-10-31']=.2
+    source.values['DGS5']['2026-10-31']=3.9
+    now[0]+=timedelta(seconds=60);updated=service.view()
+    assert all(chart['series'][0]['last_value']==.2 for chart in updated['charts'][:4])
+    assert updated['charts'][1]['series'][1]['last_value']==3.9
+    source.fail.add('DFF');now[0]+=timedelta(seconds=60);failed=service.view()
+    assert all(chart['series'][0]['status']=='stale' and chart['series'][0]['last_value']==.2 for chart in failed['charts'][:4])
+    assert failed['charts'][0]['series'][0]['last_checked_at']==updated['charts'][0]['series'][0]['last_checked_at']
 
 
 def test_growth_uses_exact_calendar_month_and_never_bridges_gaps():
@@ -79,38 +106,38 @@ def test_rejects_invalid_source_payloads(change):
 def test_polling_revisions_outage_recovery_and_no_secret_leak(tmp_path):
     source=Source();now=[NOW];path=tmp_path/'rates.json'
     service=USRatesService(path,transport=source,clock=lambda:now[0],api_key='PRIVATE_KEY')
-    assert not source.calls and service.view(saved_only=True)['charts'][0]['series'][0]['last_value'] is None
-    first=service.view();assert len(source.calls)==13
+    assert not source.calls and service.view(saved_only=True)['charts'][4]['series'][0]['last_value'] is None
+    first=service.view();assert len(source.calls)==18
     source.values['CUSR0000SAC']['2026-10-01']=150
-    now[0]+=timedelta(seconds=59);service.view();assert len(source.calls)==13
-    now[0]+=timedelta(seconds=1);second=service.view();assert len(source.calls)==26
-    assert second['charts'][0]['series'][0]['last_value']!=first['charts'][0]['series'][0]['last_value']
+    now[0]+=timedelta(seconds=59);service.view();assert len(source.calls)==18
+    now[0]+=timedelta(seconds=1);second=service.view();assert len(source.calls)==36
+    assert second['charts'][4]['series'][0]['last_value']!=first['charts'][4]['series'][0]['last_value']
     source.fail.add('UNRATE');now[0]+=timedelta(seconds=60);failed=service.view()
-    unrate=failed['charts'][2]['series'][0]
-    assert unrate['last_value']==first['charts'][2]['series'][0]['last_value'] and unrate['status']=='stale'
-    assert unrate['last_checked_at']==second['charts'][2]['series'][0]['last_checked_at']
+    unrate=failed['charts'][6]['series'][0]
+    assert unrate['last_value']==first['charts'][6]['series'][0]['last_value'] and unrate['status']=='stale'
+    assert unrate['last_checked_at']==second['charts'][6]['series'][0]['last_checked_at']
     assert 'PRIVATE_KEY' not in json.dumps(failed)+path.read_text()
     recovered=USRatesService(path,transport=lambda url:pytest.fail('No source call for saved-only'),clock=lambda:now[0],api_key='')
-    assert recovered.view(saved_only=True)['charts'][0]['series'][0]['last_value']==second['charts'][0]['series'][0]['last_value']
+    assert recovered.view(saved_only=True)['charts'][4]['series'][0]['last_value']==second['charts'][4]['series'][0]['last_value']
     source.fail.clear();now[0]+=timedelta(seconds=60)
-    assert service.view()['charts'][2]['series'][0]['status']=='ready'
+    assert service.view()['charts'][6]['series'][0]['status']=='ready'
 
 
 def test_missing_months_and_negative_breakevens_are_not_filled(tmp_path):
     source=Source();source.values['PAYEMS']['2026-09-01']=None;source.values['T5YIE']['2026-10-01']=-.1
     result=USRatesService(tmp_path/'rates.json',transport=source,clock=lambda:NOW,api_key='').view()
-    payroll=result['charts'][2]['series'][1]
+    payroll=result['charts'][6]['series'][1]
     assert payroll['observations'][-1]['value'] is None
     assert payroll['last_observation_date']=='2026-08-01'
-    assert result['charts'][4]['series'][1]['last_value']==-.1
+    assert result['charts'][8]['series'][1]['last_value']==-.1
 
 
 def test_truncated_history_keeps_previous_snapshot(tmp_path):
     source=Source();service=USRatesService(tmp_path/'rates.json',transport=source,clock=lambda:NOW,api_key='')
     before=service.view();source.values['PCEPI'].pop('2024-01-01')
     after=service.view(refresh=True)
-    assert after['charts'][1]['series'][0]['status']=='stale'
-    assert after['charts'][1]['series'][0]['observations']==before['charts'][1]['series'][0]['observations']
+    assert after['charts'][5]['series'][0]['status']=='stale'
+    assert after['charts'][5]['series'][0]['observations']==before['charts'][5]['series'][0]['observations']
 
 
 def swap_document():
@@ -139,7 +166,7 @@ def test_configured_swap_requires_true_instrument_and_keeps_native_dates(tmp_pat
             assert kwargs['token']=='PRIVATE_KEY_SWAP';return swap_document()
         return fred(url)
     result=USRatesService(tmp_path/'rates.json',transport=source,clock=lambda:NOW,api_key='').view()
-    swap=result['charts'][4]['series'][0]
+    swap=result['charts'][8]['series'][0]
     assert swap['last_value']==2.8 and swap['last_observation_date']=='2026-10-30' and swap['status']=='ready'
     assert swap['source']=='Test genuine swap feed' and result['status']=='ready'
     assert 'PRIVATE_KEY' not in json.dumps(result)+(tmp_path/'rates.json').read_text()
@@ -150,4 +177,4 @@ def test_api_no_store_and_disabled_mode_make_no_requests(tmp_path):
     with TestClient(app) as client:
         response=client.get('/api/rates/us?saved_only=true')
         assert response.status_code==200 and response.headers['cache-control']=='no-store'
-        assert response.json()['status']=='disabled' and len(response.json()['charts'])==7
+        assert response.json()['status']=='disabled' and len(response.json()['charts'])==11

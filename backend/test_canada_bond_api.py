@@ -21,12 +21,12 @@ def fixture():
                             for stamp,values in zip(['2026-10-27','2026-10-28','2026-10-29'],levels)]}
 
 
-def test_five_daily_canadian_api_yields_produce_all_seven_same_date_plots():
+def test_five_daily_canadian_api_yields_produce_all_eight_same_date_plots():
     view=analytics(parse_history(json.dumps(fixture()),'2000-01-01',TODAY.isoformat()),BY_CODE['CAN']['tenors'])
     assert view['curve_date']=='2026-10-29' and len(view['curve'])==5
     assert view['quotes'][0]['series_id']=='TB.CDN.90D.MID' and view['quotes'][0]['value']==2.55
     assert {item['key']:item['value'] for item in view['metrics']}=={
-        '2s10s':48,'3m10s':129,'5s30s':55,'5s10s':26,'10s30s':29,'2s5s10s':-4,'2s10s30s':19}
+        '2s5s':22,'2s10s':48,'3m10s':129,'5s30s':55,'5s10s':26,'10s30s':29,'2s5s10s':-4,'2s10s30s':19}
     assert all(quote['date']=='2026-10-29' for quote in view['quotes'])
 
 
@@ -114,4 +114,4 @@ def test_country_endpoint_returns_canadian_sources_and_daily_bill_history(tmp_pa
     assert result['source_route']==BY_CODE['CAN']['source'] and len(result['curve'])==5
     assert result['quotes'][0]['series_id']=='TB.CDN.90D.MID' and result['metrics'][1]['date']=='2026-10-29'
     assert all('bankofcanada.ca' in source['url'] for source in result['sources'])
-    assert 'remaining maturity varies' in result['coverage_note'] and len(result['metrics'])==7
+    assert 'remaining maturity varies' in result['coverage_note'] and len(result['metrics'])==8

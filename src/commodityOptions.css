@@ -1,0 +1,128 @@
+.oil-workspace {
+  --oil-green: #247663;
+  --oil-border: #dfe9e5;
+  margin: 0 0 26px;
+}
+.oil-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 21px 23px;
+  border: 1px solid var(--oil-border);
+  border-radius: 10px 10px 0 0;
+  background: linear-gradient(104deg, #eef5f0, #f8fbf9);
+}
+.oil-heading-title { display: flex; align-items: center; gap: 14px; }
+.oil-heading-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #dbebe3;
+  color: var(--oil-green);
+}
+.oil-heading h2 { color: #24443a; font-size: 21px; font-weight: 750; letter-spacing: -.45px; }
+.oil-heading p { color: #586e66; margin-top: 4px; font-size: 12px; }
+.oil-feed-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 7px; color: #526a61; font-size: 11px; white-space: nowrap; }
+.oil-controls {
+  display: grid;
+  grid-template-columns: minmax(170px, 1fr) minmax(170px, 1fr) auto auto;
+  align-items: end;
+  gap: 12px;
+  padding: 15px 20px;
+  background: #fff;
+  border-inline: 1px solid var(--oil-border);
+}
+.oil-controls label { display: grid; gap: 5px; color: #52605b; font-size: 11px; font-weight: 650; }
+.oil-controls select, .oil-controls input { width: 100%; }
+.oil-controls select { text-overflow: ellipsis; }
+.oil-controls input { max-width: 115px; }
+.oil-controls .button { min-height: 38px; white-space: nowrap; }
+.oil-rate { display: flex; align-items: end; gap: 7px; }
+.oil-source {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px 10px;
+  min-height: 39px;
+  padding: 8px 20px;
+  margin-bottom: 16px;
+  background: #fafcfb;
+  border: 1px solid var(--oil-border);
+  border-radius: 0 0 10px 10px;
+  font-size: 11px;
+  color: #526862;
+}
+.oil-source svg { flex-shrink: 0; }
+.oil-source a { display: inline-flex; align-items: center; gap: 3px; margin-left: auto; color: var(--oil-green); font-weight: 650; }
+.oil-source a:hover { text-decoration: underline; }
+.oil-alert {
+  padding: 10px 14px;
+  margin: 0 0 13px;
+  background: #fff8e9;
+  border: 1px solid #f0e0bf;
+  border-radius: 7px;
+  color: #765625;
+  font-size: 12px;
+}
+.oil-metrics { margin-bottom: 15px; }
+.oil-chart-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.oil-chart-grid .panel { min-width: 0; }
+.oil-workspace .panel { margin-bottom: 16px; }
+.oil-zoom-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 20px;
+  color: #60736d;
+  font-size: 11px;
+}
+.oil-zoom-hit { cursor: crosshair; touch-action: pan-y; }
+.oil-chart-dragging { user-select: none; }
+.oil-chart {
+  height: 282px;
+  min-width: 0;
+  padding: 0 9px 7px 6px;
+  font-size: 11px;
+}
+.oil-term .oil-chart { height: 245px; }
+.oil-chart .recharts-cartesian-axis-tick-value { fill: #63736f; }
+.oil-chart .oil-axis-label { fill: #344b46; font-size: 11px; font-weight: 650; }
+.oil-chart .recharts-legend-wrapper { padding-bottom: 1px; }
+.oil-note { margin: 0; padding: 8px 16px 13px; color: #60736d; font-size: 11px; }
+.oil-chart-caption { color: #455c56; font-size: 12px; }
+.oil-chart-caption + .oil-note { padding-top: 0; }
+.oil-warning { color: #885e25; }
+.oil-details, .oil-method {
+  color: #526963;
+  font-size: 12px;
+  border-top: 1px solid #e7eeeb;
+}
+.oil-details summary, .oil-method summary { padding: 10px 16px; cursor: pointer; font-weight: 650; }
+.oil-method { background: #fafcfb; border: 1px solid var(--oil-border); border-radius: 8px; }
+.oil-method summary svg { margin-right: 7px; vertical-align: text-bottom; color: var(--oil-green); }
+.oil-method p { padding: 0 16px 11px; max-width: 1000px; }
+.oil-method p:first-of-type { padding-top: 5px; }
+.oil-diagnostics td, .oil-details td { font-variant-numeric: tabular-nums; }
+.oil-side { text-transform: capitalize; }
+@media (max-width: 1120px) {
+  .oil-controls { grid-template-columns: minmax(145px, 1fr) minmax(145px, 1fr) auto; }
+  .oil-refresh { justify-self: start; }
+}
+@media (max-width: 900px) {
+  .oil-chart-grid { grid-template-columns: minmax(0, 1fr); gap: 0; }
+}
+@media (max-width: 680px) {
+  .oil-heading { align-items: flex-start; flex-wrap: wrap; padding: 15px; gap: 12px; }
+  .oil-feed-meta { align-items: flex-start; flex-direction: row; flex-wrap: wrap; white-space: normal; }
+  .oil-controls { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: 12px; gap: 10px 8px; }
+  .oil-controls .button { padding-inline: 8px; }
+  .oil-source { padding-inline: 12px; }
+  .oil-source a { margin-left: 0; }
+}
+@media (max-width: 420px) {
+  .oil-controls > label { grid-column: 1 / -1; }
+}

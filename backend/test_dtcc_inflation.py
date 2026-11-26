@@ -241,7 +241,7 @@ def test_rates_panel_merges_live_swap_without_persisting_or_exporting_trade_reco
     monkeypatch.delenv('RATES_INFLATION_SWAP_URL', raising=False)
     tape = Tape(); source = DTCCInflationSource(tmp_path/'dtcc.json', transport=tape, clock=lambda: NOW)
     rates = USRatesService(tmp_path/'rates.json', transport=FredSource(), clock=lambda: NOW, api_key='', swap_source=source)
-    document = rates.view(); swap = document['charts'][4]['series'][0]
+    document = rates.view(); swap = next(chart for chart in document['charts'] if chart['key']=='inflation_expectations')['series'][0]
     assert swap['status'] == 'ready' and swap['last_value'] == 3 and document['status'] == 'ready'
     assert swap['last_observation_at'] == '2026-10-31T09:59:00+00:00' and swap['trade_count'] == 1
     assert swap['delivery'] == 'reported_transactions' and 'trade median' in swap['label']

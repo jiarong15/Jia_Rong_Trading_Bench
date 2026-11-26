@@ -1,7 +1,7 @@
 export type GreekMetric='gamma'|'delta'|'vega'|'notional';
 export type OptionSide='call'|'put';
-export type HeatmapCell={row:number;column:number;side:OptionSide;count:number;gamma:number|null;delta:number|null;vega:number|null;notional:number|null};
-export type HeatmapData={pair:string;status:string;basis:'reported_trades'|'open_interest'|'not_connected';source:string;source_url:string|null;checked_at:string|null;as_of:string|null;last_trade_at?:string|null;spot:number|null;spot_at:string|null;spot_date?:string|null;volatility_published_at?:string|null;window_start:string|null;window_end:string|null;rows:string[];columns:string[];cells:HeatmapCell[];metrics:Record<GreekMetric,{available:boolean;definition:string;coverage_note?:string}>;notices:string[];error:string|null;poll_interval_seconds:number};
+export type HeatmapCell={row:number;column:number;side:OptionSide;count:number;modelled_count?:number;gamma:number|null;delta:number|null;vega:number|null;notional:number|null};
+export type HeatmapData={pair:string;status:string;basis:'reported_trades'|'open_interest'|'not_connected';source:string;source_url:string|null;checked_at:string|null;as_of:string|null;last_trade_at?:string|null;spot:number|null;spot_at:string|null;spot_date?:string|null;volatility_published_at?:string|null;market_source?:string;market_source_url?:string|null;market_checked_at?:string|null;pricing_checked_at?:string|null;pricing_date?:string|null;volatility_curve?:{tenor:string;years:number;volatility_pct:number;bid_pct:number;ask_pct:number}[];window_start:string|null;window_end:string|null;rows:string[];columns:string[];cells:HeatmapCell[];metrics:Record<GreekMetric,{available:boolean;definition:string;coverage_note?:string}>;notices:string[];error:string|null;poll_interval_seconds:number};
 export const METRICS:Record<GreekMetric,string>={gamma:'Gamma notional',delta:'Delta notional',vega:'Vega notional',notional:'Notional'};
 
 export function validateHeatmap(data:HeatmapData,pair:string){
@@ -12,6 +12,7 @@ export function validateHeatmap(data:HeatmapData,pair:string){
   const id=`${cell.row}/${cell.column}/${cell.side}`;
   if(!Number.isInteger(cell.row)||!Number.isInteger(cell.column)||cell.row<0||cell.column<0||cell.row>=data.rows.length||cell.column>=data.columns.length||!['call','put'].includes(cell.side)||identities.has(id)||!Number.isInteger(cell.count)||cell.count<0)throw Error('Invalid FX options heatmap bucket.');
   identities.add(id);
+  if(cell.modelled_count!==undefined&&(!Number.isInteger(cell.modelled_count)||cell.modelled_count<0||cell.modelled_count>cell.count))throw Error('Invalid FX options coverage count.');
   for(const metric of Object.keys(METRICS) as GreekMetric[])if(cell[metric]!==null&&(!Number.isFinite(cell[metric])||Number(cell[metric])<0))throw Error('Invalid FX options notional.');
  }
  return data;
@@ -19,22 +20,27 @@ export function validateHeatmap(data:HeatmapData,pair:string){
 
 export function heatmapValues(data:HeatmapData|null,metric:GreekMetric,calls:boolean,puts:boolean){
  const available=Boolean(data?.metrics[metric]?.available)&&data?.basis!=='not_connected';
- const grid=Array.from({length:data?.rows.length??0},()=>Array<number|null>(data?.columns.length??0).fill(available?0:null));
- let callTotal:number|null=0,putTotal:number|null=0,count=0;
- if(data)for(const cell of data.cells){
-  const selected=cell.side==='call'?calls:puts;
-  if(selected)count+=cell.count;
-  if(!available)continue;
-  const value=cell[metric];
-  if(value===null){if(cell.side==='call')callTotal=null;else putTotal=null;if(cell.side==='call'?calls:puts)grid[cell.row][cell.column]=null;continue;}
-  if(cell.side==='call'){if(callTotal!==null)callTotal+=value;}else if(putTotal!==null)putTotal+=value;
-  if(cell.side==='call'?!calls:!puts)continue;
-  const prior=grid[cell.row][cell.column];grid[cell.row][cell.column]=prior===null?null:prior+value;
- }
- const sum=(values:(number|null)[])=>values.some(value=>value===null)?null:values.reduce<number>((total,value)=>total+(value??0),0);
- const rowTotals=grid.map(sum),columnTotals=(data?.columns??[]).map((_,index)=>sum(grid.map(row=>row[index])));
- const total=available?sum(rowTotals):null,max=Math.max(0,...grid.flat().filter((v):v is number=>v!==null));
- return {available,grid,rowTotals,columnTotals,total,max,count,putCallRatio:available&&callTotal!==null&&putTotal!==null&&callTotal>0?putTotal/callTotal:null};
+ const summarize=(cells:HeatmapCell[])=>{
+  let count=0,coveredCount=0,value=0;
+  for(const cell of cells){
+   count+=cell.count;
+   if(!available||cell[metric]===null)continue;
+   value+=cell[metric];
+   coveredCount+=metric==='notional'?cell.count:cell.modelled_count??cell.count;
+  }
+  return {value:!available||count>0&&coveredCount===0?null:value,count,coveredCount,partial:available&&coveredCount<count};
+ };
+ const selected=(data?.cells??[]).filter(cell=>cell.side==='call'?calls:puts);
+ const buckets=Array.from({length:data?.rows.length??0},()=>Array.from({length:data?.columns.length??0},()=>[] as HeatmapCell[]));
+ for(const cell of selected)buckets[cell.row][cell.column].push(cell);
+ const summaries=buckets.map(row=>row.map(summarize));
+ const rows=buckets.map(row=>summarize(row.flat())),columns=(data?.columns??[]).map((_,index)=>summarize(buckets.flatMap(row=>row[index])));
+ const total=summarize(selected),call=summarize((data?.cells??[]).filter(cell=>cell.side==='call')),put=summarize((data?.cells??[]).filter(cell=>cell.side==='put'));
+ const grid=summaries.map(row=>row.map(cell=>cell.value)),max=Math.max(0,...grid.flat().filter((v):v is number=>v!==null));
+ return {available,grid,gridPartial:summaries.map(row=>row.map(cell=>cell.partial)),rowTotals:rows.map(row=>row.value),rowPartial:rows.map(row=>row.partial),
+  columnTotals:columns.map(column=>column.value),columnPartial:columns.map(column=>column.partial),total:total.value,partial:total.partial,coveredCount:total.coveredCount,max,count:total.count,
+  ratioPartial:call.partial||put.partial,ratioCoveredCount:call.coveredCount+put.coveredCount,ratioCount:call.count+put.count,
+  putCallRatio:call.value!==null&&put.value!==null&&call.value>0?put.value/call.value:null};
 }
 
 export function compactUsd(value:number|null){

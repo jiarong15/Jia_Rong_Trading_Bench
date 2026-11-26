@@ -21,14 +21,14 @@ def fixture():
             for key,term,suffix in TERMS]
 
 
-def test_exact_api_tenors_populate_all_five_yields_and_seven_analytics_on_native_china_dates():
+def test_exact_api_tenors_populate_all_five_yields_and_eight_analytics_on_native_china_dates():
     rows=parse_history(json.dumps(fixture()),'2006-03-01','2026-10-30')
     assert [row['date'] for row in rows]==['2026-10-28','2026-10-29','2026-10-30']
     assert rows[-1]['y2']==1.2457
     view=analytics(rows,BY_CODE['CHN']['tenors'])
     assert len(view['curve'])==5 and view['curve_date']=='2026-10-30'
     assert {metric['key']:metric['value'] for metric in view['metrics']}=={
-        '2s10s':40.43,'3m10s':48.57,'5s30s':72.94,'5s10s':29.68,'10s30s':43.26,
+        '2s5s':10.75,'2s10s':40.43,'3m10s':48.57,'5s30s':72.94,'5s10s':29.68,'10s30s':43.26,
         '2s5s10s':-18.93,'2s10s30s':-2.83}
     assert all(quote['series_id'] and quote['date']=='2026-10-30' for quote in view['quotes'])
 

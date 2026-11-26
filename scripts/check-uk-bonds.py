@@ -8,7 +8,7 @@ from urllib.request import Request,urlopen
 from xml.etree import ElementTree as ET
 from zipfile import ZipFile
 
-FORMULAS={'2s10s':{'y10':1,'y2':-1},'3m10s':{'y10':1,'m3':-1},'5s30s':{'y30':1,'y5':-1},
+FORMULAS={'2s5s':{'y5':1,'y2':-1},'2s10s':{'y10':1,'y2':-1},'3m10s':{'y10':1,'m3':-1},'5s30s':{'y30':1,'y5':-1},
           '5s10s':{'y10':1,'y5':-1},'10s30s':{'y30':1,'y10':-1},
           '2s5s10s':{'y5':2,'y2':-1,'y10':-1},'2s10s30s':{'y10':2,'y2':-1,'y30':-1}}
 NS='{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'

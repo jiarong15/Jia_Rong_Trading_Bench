@@ -1,5 +1,5 @@
 export type YieldKey='m3'|'y2'|'y5'|'y10'|'y30';
-export type MetricKey='2s10s'|'3m10s'|'5s30s'|'5s10s'|'10s30s'|'2s5s10s'|'2s10s30s';
+export type MetricKey='2s10s'|'3m10s'|'5s30s'|'5s10s'|'10s30s'|'2s5s'|'2s5s10s'|'2s10s30s';
 export type BondRow={date:string}&Record<YieldKey|MetricKey,number|null>;
 export type Observation={value:number|null;date:string|null;previous_date:string|null;change_bp:number|null};
 export type YieldQuote=Observation&{key:YieldKey;label:string;series_id:string|null;years:number};
@@ -14,6 +14,7 @@ export const CURVE_METRICS:{key:MetricKey;kind:'spread'|'butterfly';formula:stri
  {key:'5s30s',kind:'spread',formula:'30Y − 5Y',color:'#8c78b1'},
  {key:'5s10s',kind:'spread',formula:'10Y − 5Y',color:'#c18451'},
  {key:'10s30s',kind:'spread',formula:'30Y − 10Y',color:'#4e8d9a'},
+ {key:'2s5s',kind:'spread',formula:'5Y − 2Y',color:'#a56578'},
  {key:'2s5s10s',kind:'butterfly',formula:'2 × 5Y − 2Y − 10Y',color:'#8c78b1'},
  {key:'2s10s30s',kind:'butterfly',formula:'2 × 10Y − 2Y − 30Y',color:'#527dcc'}
 ];

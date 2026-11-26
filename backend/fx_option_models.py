@@ -11,6 +11,7 @@ import zipfile
 from .fx_exact_feed import PAIRS, timestamp
 from .fx_volatility import parse_saxo
 
+OPTION_PAIRS = PAIRS | {'USD/CNY'}
 EDGES = [.5,.7,.8,.85,.9,.925,.95,.975,1,1.025,1.05,1.075,1.1,1.15,1.2,1.3,1.5]
 ROWS = ['<50%','50–70%','70–80%','80–85%','85–90%','90–92.5%','92.5–95%','95–97.5%',
         '97.5–100%','100–102.5%','102.5–105%','105–107.5%','107.5–110%','110–115%',
@@ -43,7 +44,7 @@ def normalize_trade(row, now):
     if not match or row['Event type'] != 'TRAD' or row['Package indicator'].upper() != 'FALSE' or row['Non-standardized term indicator'].upper() != 'FALSE':
         return None
     direction, first, second = match.groups()
-    pair = next((pair for pair in PAIRS if set(pair.split('/')) == {first,second}), None)
+    pair = next((pair for pair in OPTION_PAIRS if set(pair.split('/')) == {first,second}), None)
     if pair is None or row['UPI Underlier Name'] != f'{first} {second}':
         return None
     base, quote = pair.split('/')
@@ -156,8 +157,8 @@ def saxo_surface(body, now):
     return surface,published
 
 
-def interpolate_vol(nodes, years):
-    if not nodes or not 0<years<=1:
+def interpolate_vol(nodes, years, max_years=1):
+    if not nodes or not 0<years<=max_years:
         return None
     if years<=nodes[0][0]:
         return nodes[0][1]
@@ -168,10 +169,28 @@ def interpolate_vol(nodes, years):
     return None
 
 
-def estimated_greeks(spot, forward_1y, strike, years, volatility, side, notional, quote_usd):
-    if any(not math.isfinite(v) or v<=0 for v in (spot,forward_1y,strike,years,volatility,notional,quote_usd)) or years>1:
+def interpolate_forward(spot, today, nodes, expiry):
+    """Log-linear outright interpolation on published CFETS expiry dates."""
+    if expiry<=today:
+        return None
+    previous_day=today; previous_forward=spot
+    for node in nodes:
+        day=date.fromisoformat(node['expiry']); forward=node['forward']
+        if day<=today:
+            continue
+        if expiry<=day:
+            weight=(expiry-previous_day).days/(day-previous_day).days
+            return math.exp(math.log(previous_forward)*(1-weight)+math.log(forward)*weight)
+        previous_day=day; previous_forward=forward
+    return None
+
+
+def estimated_greeks(spot, forward_1y, strike, years, volatility, side, notional, quote_usd, *, forward=None):
+    if any(not math.isfinite(v) or v<=0 for v in (spot,forward_1y,strike,years,volatility,notional,quote_usd)) or forward is None and years>1:
         raise ValueError('Invalid FX model inputs.')
-    forward=spot*math.exp(math.log(forward_1y/spot)*years)
+    forward=spot*math.exp(math.log(forward_1y/spot)*years) if forward is None else forward
+    if not math.isfinite(forward) or forward<=0:
+        raise ValueError('Invalid FX forward outright.')
     root=math.sqrt(years); d1=(math.log(forward/strike)+.5*volatility*volatility*years)/(volatility*root)
     density=math.exp(-.5*d1*d1)/math.sqrt(2*math.pi)
     delta=.5*(1+math.erf(d1/math.sqrt(2)))-(1 if side=='put' else 0)
@@ -203,16 +222,17 @@ def build_cells(trades, pair, now, window_days, quote, nodes):
             continue
         selected+=1; last_trade=max(last_trade or executed.isoformat(),executed.isoformat())
         row=bisect_right(EDGES,trade['strike']/spot); column=expiry_bucket(expiry,now.date()); side=trade['side']
-        cell=cells.setdefault((row,column,side),{'row':row,'column':column,'side':side,'count':0,
-                                               'notional':0.,'delta':0.,'gamma':0.,'vega':0.})
+        cell=cells.setdefault((row,column,side),{'row':row,'column':column,'side':side,'count':0,'modelled_count':0,
+                                               'notional':0.,'delta':None,'gamma':None,'vega':None})
         cell['count']+=1; cell['notional']+=trade['notional']*spot*quote_usd
-        years=(expiry-now.date()).days/365; vol=interpolate_vol(nodes,years)
-        greeks=estimated_greeks(spot,quote['forward_12m'],trade['strike'],years,vol,side,trade['notional'],quote_usd) if vol is not None else None
+        years=(expiry-now.date()).days/365
+        vol=interpolate_vol(nodes,years,max_years=quote.get('max_model_years',1))
+        forward=interpolate_forward(spot,now.date(),quote['forward_curve'],expiry) if 'forward_curve' in quote else None
+        can_model=vol is not None and ('forward_curve' not in quote or forward is not None)
+        greeks=estimated_greeks(spot,quote['forward_12m'],trade['strike'],years,vol,side,trade['notional'],quote_usd,forward=forward) if can_model else None
         if greeks is not None:
             modelled+=1
-        for metric in ('delta','gamma','vega'):
-            if greeks is None:
-                cell[metric]=None
-            elif cell[metric] is not None:
-                cell[metric]+=greeks[metric]
+            cell['modelled_count']+=1
+            for metric in ('delta','gamma','vega'):
+                cell[metric]=(cell[metric] or 0.)+greeks[metric]
     return [{k:round(v,2) if isinstance(v,float) else v for k,v in cell.items()} for cell in cells.values()],selected,modelled,last_trade

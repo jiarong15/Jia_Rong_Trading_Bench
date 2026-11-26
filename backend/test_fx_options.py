@@ -175,6 +175,26 @@ def test_bucketing_filter_windows_same_day_expiry_and_missing_greeks_never_zero_
     assert build_cells([a],'EUR/USD',NOW,1,None,[])[0]==[]
 
 
+@pytest.mark.parametrize('reverse',[False,True])
+def test_mixed_bucket_keeps_covered_greeks_and_counts_without_zero_filling_missing_trades(reverse):
+    # A leap year puts 365-day and 366-day expiries in the same 9-12M bucket.
+    now=NOW.replace(year=2027)
+    trade={**normalize_trade(option(),NOW),'executed_at':(now-timedelta(days=1)).isoformat(),'expiry':'2028-10-30'}
+    unsupported={**trade,'expiry':'2028-10-31'}
+    quote=Carry().quotes['EUR/USD'];nodes=[(7/365,.1),(1,.1)]
+    expected=build_cells([trade],'EUR/USD',now,30,quote,nodes)[0][0]
+    trades=[trade,unsupported]
+    if reverse:trades.reverse()
+    cells,selected,modelled,_=build_cells(trades,'EUR/USD',now,30,quote,nodes)
+    assert selected==2 and modelled==1 and len(cells)==1
+    cell=cells[0]
+    assert cell['count']==2 and cell['modelled_count']==1 and cell['notional']==2.2e6
+    for metric in ('delta','gamma','vega'):
+        assert cell[metric]==expected[metric]
+    missing=build_cells([unsupported],'EUR/USD',now,30,quote,nodes)[0][0]
+    assert missing['modelled_count']==0 and all(missing[metric] is None for metric in ('delta','gamma','vega'))
+
+
 def test_refresh_throttle_new_trades_inputs_outage_recovery_and_saved_only(tmp_path):
     transport=Tape();carry=Carry();now=[NOW]
     service=FXOptionsService(tmp_path/'fx.json',carry,transport=transport,clock=lambda:now[0])
@@ -232,4 +252,7 @@ def test_api_location_no_store_disabled_mode_and_pair_validation(tmp_path):
         response=client.get('/api/fx/options/heatmap?pair=EUR%2FUSD&saved_only=true')
         assert response.status_code==200 and response.headers['cache-control']=='no-store'
         assert response.json()['status']=='disabled' and response.json()['cells']==[]
+        cny=client.get('/api/fx/options/heatmap?pair=USD%2FCNY&saved_only=true')
+        assert cny.status_code==200 and cny.json()['market_source']=='CFETS / ChinaMoney'
+        assert not cny.json()['metrics']['gamma']['available']
         assert client.get('/api/fx/options/heatmap?pair=FAKE').status_code==409

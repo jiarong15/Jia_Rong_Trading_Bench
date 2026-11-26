@@ -4,7 +4,7 @@ from decimal import Decimal
 import json
 from urllib.request import urlopen
 
-FORMULAS = {'2s10s':{'y10':1,'y2':-1},'3m10s':{'y10':1,'m3':-1},'5s30s':{'y30':1,'y5':-1},
+FORMULAS = {'2s5s': {'y5':1,'y2':-1}, '2s10s':{'y10':1,'y2':-1},'3m10s':{'y10':1,'m3':-1},'5s30s':{'y30':1,'y5':-1},
             '5s10s':{'y10':1,'y5':-1},'10s30s':{'y30':1,'y10':-1},
             '2s5s10s':{'y5':2,'y2':-1,'y10':-1},'2s10s30s':{'y10':2,'y2':-1,'y30':-1}}
 COUNTRIES = ['USA','CHN','JPN','GBR','CAN','SGP']
@@ -16,7 +16,7 @@ def check(code):
         assert response.headers['Cache-Control']=='no-store'
     assert result['country']['code']==code
     assert result['status']=='ready' and not result['error'], f"{code}: {result.get('error')}"
-    assert len(result['countries'])==6 and len(result['quotes'])==5 and len(result['metrics'])==7
+    assert len(result['countries'])==6 and len(result['quotes'])==5 and len(result['metrics'])==len(FORMULAS)
     checked=0
     for row in result['rows']:
         for key,weights in FORMULAS.items():

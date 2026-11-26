@@ -5,7 +5,7 @@ from html.parser import HTMLParser
 import json
 from urllib.request import Request,urlopen
 
-FORMULAS={'2s10s':{'y10':1,'y2':-1},'3m10s':{'y10':1,'m3':-1},'5s30s':{'y30':1,'y5':-1},
+FORMULAS={'2s5s':{'y5':1,'y2':-1},'2s10s':{'y10':1,'y2':-1},'3m10s':{'y10':1,'m3':-1},'5s30s':{'y30':1,'y5':-1},
           '5s10s':{'y10':1,'y5':-1},'10s30s':{'y30':1,'y10':-1},
           '2s5s10s':{'y5':2,'y2':-1,'y10':-1},'2s10s30s':{'y10':2,'y2':-1,'y30':-1}}
 
@@ -35,7 +35,7 @@ def main():
     assert market['country']['code']=='SGP' and market['country']['currency']=='SGD'
     assert market['status']=='ready' and not market['error'] and market['poll_interval_seconds']==60
     assert market['source_route']=='MAS \u00b7 official SGS benchmarks'
-    assert len(market['curve'])==4 and len(market['metrics'])==7
+    assert len(market['curve'])==4 and len(market['metrics'])==len(FORMULAS)
     assert market['quotes'][0]['value'] is None and market['quotes'][0]['series_id'] is None
     assert all('mas.gov.sg' in source['url'] for source in market['sources'])
     tables=ClosingTables(fetch('https://eservices.mas.gov.sg/Statistics/fdanet/SgsBenchmarkIssuePrices.aspx')).tables
